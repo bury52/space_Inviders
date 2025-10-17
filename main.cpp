@@ -5,51 +5,46 @@
 constexpr int window_height = 1000;
 constexpr int  window_width = 1000;
 
-class character {
+
+
+class Player: public sf::Drawable, public sf::Transformable{
 
 public:
-    sf::Sprite sprite;
 
-    explicit character(const sf::Texture &texture,const float &scal = 10)
+    explicit Player(const sf::Texture &texture)
         : sprite(texture) {
-        sprite.setScale({scal,scal});
+        setScale({5,5});
     }
 
-    unsigned int get_border_x(const unsigned int &border) {
+private:
+    sf::Sprite sprite;
+
+    unsigned int get_border_x(const unsigned int &border) const {
         return border - (sprite.getTexture().getSize().x * static_cast<unsigned int>(sprite.getScale().x));
     }
 
-    unsigned int get_border_y(const unsigned int &border) {
+    unsigned int get_border_y(const unsigned int &border) const {
         return border - (sprite.getTexture().getSize().y * static_cast<unsigned int>(sprite.getScale().y));
     }
 
+protected:
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
 
+        states.transform *= getTransform();
+        target.draw(sprite, states);
+
+    };
 };
 
 int main() {
 
-    // Create the main window
-    sf::RenderWindow window(sf::VideoMode({window_width, window_height}), "SFML window");
+    sf::RenderWindow window(sf::VideoMode({window_width, window_height}), "Space Invaders",sf::Style::Close);
+    window.setPosition({10,10});
+    // window.setKeyRepeatEnabled(false);
 
-    // Load a sprite to display
-    character player = character(sf::Texture("statek.png"));
-    const sf::Texture texture("statek.png");
-    sf::Sprite sprite(texture);
-    sprite.setScale(sf::Vector2f(10,10));
-    sprite.setPosition(sf::Vector2f(0,window_height - (texture.getSize().y *10)));
+    sf::Texture texture("statek.png");
+    Player player = Player(texture);
 
-    // sprite.setPosition(sf::Vector2f(0.0f, 0.0f));
-    // Create a graphical text to display
-    // const sf::Font font("JetBrainsMono-VariableFont_wght.ttf");
-    // sf::Text text(font, "Hello SFML", 50);
-
-    // Load a music to play
-    // sf::Music music("nice_music.ogg");
-
-    // Play the music
-    // music.play();
-
-    // Start the game loop
     while (window.isOpen()) {
 
         while (const std::optional event = window.pollEvent())
@@ -58,41 +53,40 @@ int main() {
             {
                 window.close();
             }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Escape))
+            {
+                window.close();
+            }
+
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W))
             {
 
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A))
             {
-                // left key is pressed: move our character
-                if (sprite.getPosition().x - 10 >= 0) {
-                    sprite.move({-10, 0});
+                if (player.getPosition().x - 10 >= 0) {
+                    player.move({-10, 0});
                 }else {
-                    sprite.setPosition({0,sprite.getPosition().y});
+                    player.setPosition({0,player.getPosition().y});
                 }
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D))
             {
-                // left key is pressed: move our character
-                if (sprite.getPosition().x + 10 <= (window_width - (texture.getSize().x * 10))) {
-                    sprite.move({10, 0});
-                }else {
-                    sprite.setPosition({static_cast<float>(window_width - (texture.getSize().x * 10)),sprite.getPosition().y});
-                }
+                // if (player.sprite.getPosition().x + 10 <= player.get_border_x(window_width)) {
+                    player.move({10, 0});
+                // }else {
+                    // player.sprite.setPosition({static_cast<float>(player.get_border_x(window_width)),player.sprite.getPosition().y});
+                // }
 
             }
         }
 
-        // Clear screen
         window.clear();
 
-        // Draw the sprite
-        window.draw(sprite);
+        window.draw(player);
 
-        // Draw the string
-        // window.draw(text);
-
-        // Update the window
         window.display();
     }
 };
+
+
