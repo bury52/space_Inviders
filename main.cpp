@@ -3,20 +3,40 @@
 #include <SFML/Graphics.hpp>
 
 constexpr int window_height = 1000;
-constexpr int  window_width = 1000;
+constexpr int window_width = 1000;
+
+void set_y_for_player(sf::Transformable &target) {
+    target.setPosition({target.getPosition().x, window_height - 80});
+};
 
 
-
-class Player: public sf::Drawable, public sf::Transformable{
-
+class Player : public sf::Drawable, public sf::Transformable {
 public:
+    explicit Player()
+        : texture("statek.png"), sprite(texture) {
+        setScale({5, 5});
+    }
 
-    explicit Player(const sf::Texture &texture)
-        : sprite(texture) {
-        setScale({5,5});
+    void onKeyPressed(const sf::Event::KeyPressed &event) {
+        if (event.scancode == sf::Keyboard::Scancode::A) {
+            if (getPosition().x - 10 >= 0) {
+                move({-10, 0});
+            } else {
+                setPosition({0, getPosition().y});
+            }
+        }
+
+        if (event.scancode == sf::Keyboard::Scancode::D) {
+            if (sprite.getPosition().x + 10 <= get_border_x(window_width)) {
+                move({10, 0});
+            } else {
+                sprite.setPosition({static_cast<float>(get_border_x(window_width)), sprite.getPosition().y});
+            }
+        }
     }
 
 private:
+    sf::Texture texture;
     sf::Sprite sprite;
 
     unsigned int get_border_x(const unsigned int &border) const {
@@ -29,56 +49,33 @@ private:
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
-
         states.transform *= getTransform();
         target.draw(sprite, states);
-
     };
 };
 
-int main() {
 
-    sf::RenderWindow window(sf::VideoMode({window_width, window_height}), "Space Invaders",sf::Style::Close);
-    window.setPosition({10,10});
+int main() {
+    sf::RenderWindow window(sf::VideoMode({window_width, window_height}), "Space Invaders", sf::Style::Close);
+    window.setPosition({10, 10});
     // window.setKeyRepeatEnabled(false);
 
-    sf::Texture texture("statek.png");
-    Player player = Player(texture);
+    Player player = Player();
+    set_y_for_player(player);
 
     while (window.isOpen()) {
-
-        while (const std::optional event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-            {
+        while (const std::optional event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
                 window.close();
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Escape))
-            {
-                window.close();
-            }
+            } else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+                player.onKeyPressed(*keyPressed);
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W))
-            {
-
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A))
-            {
-                if (player.getPosition().x - 10 >= 0) {
-                    player.move({-10, 0});
-                }else {
-                    player.setPosition({0,player.getPosition().y});
+                if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
+                    window.close();
                 }
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D))
-            {
-                // if (player.sprite.getPosition().x + 10 <= player.get_border_x(window_width)) {
-                    player.move({10, 0});
-                // }else {
-                    // player.sprite.setPosition({static_cast<float>(player.get_border_x(window_width)),player.sprite.getPosition().y});
-                // }
 
-            }
+
         }
 
         window.clear();
@@ -88,5 +85,3 @@ int main() {
         window.display();
     }
 };
-
-
