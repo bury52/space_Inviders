@@ -13,7 +13,10 @@ FetchContent_Declare(SFML
         SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(space_invaders main.cpp)
+add_executable(space_invaders main.cpp
+        enum.h
+        util.h
+        Player.h)
 target_link_libraries(space_invaders PRIVATE SFML::Graphics SFML::Audio)
 
 install(TARGETS ${PROJECT_NAME}
