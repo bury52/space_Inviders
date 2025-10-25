@@ -7,6 +7,8 @@
 
 enum class TurnState {
     None = 0,
+    Up,
+    Down,
     Left,
     Right,
 };

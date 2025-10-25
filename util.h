@@ -6,7 +6,7 @@
 #define SPACE_INVADERS_UTIL_H
 #include "SFML/Graphics/Transformable.hpp"
 
-inline void set_y_for_player(sf::Transformable &target,const float& window_y) {
+inline void set_y_for_player(sf::Transformable &target, const float &window_y) {
     target.setPosition({target.getPosition().x, window_y - 80});
 };
 
