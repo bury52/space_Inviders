@@ -13,13 +13,14 @@ int main() {
     window.setKeyRepeatEnabled(false);
 
     std::vector<std::shared_ptr<Robot> > current_enemy = {};
-    Enemy_Controller enemy_controller({0, 50, 100, 150, 200, 250});
-    Enemy_Factory enemy_factory(current_enemy, enemy_controller, {10, static_cast<float>(window.getSize().x) - 10});
+    Enemy_Controller enemy_controller(current_enemy, {0, 50, 100, 150, 200, 250},
+                                      {10, static_cast<float>(window.getSize().x) - 10});
 
-    enemy_factory
-    .add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0)
-    .add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1)
-    .add_enemy(2).add_enemy(2).add_enemy(2).add_enemy(2);
+    enemy_controller
+            .add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0)
+            .add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1)
+            .add_enemy(2).add_enemy(2).add_enemy(2).add_enemy(2)
+            .set_start_position();
 
 
     Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, current_enemy);
@@ -44,6 +45,8 @@ int main() {
         sf::Time restart = clock.restart();
 
         player.update(restart);
+
+        enemy_controller.update(restart);
 
         for (const auto &enemy: current_enemy) {
             enemy->update(restart);
