@@ -3,7 +3,7 @@
 //
 #include "Robot.h"
 
-Robot::Robot(const std::shared_ptr<sf::Texture> &texture,const float& scale) : texture(texture), sprite(*texture) {
+Robot::Robot(const std::shared_ptr<sf::Texture> &texture, const float &scale) : texture(texture), sprite(*texture) {
     setScale({scale, scale});
 }
 
@@ -16,7 +16,9 @@ float Robot::getSize_x() const {
 }
 
 void Robot::update(const sf::Time &elapsed) {
-
+    if (can_shoot) {
+        sprite.setColor(sf::Color::Red);
+    }
 }
 
 void Robot::draw(sf::RenderTarget &target, sf::RenderStates states) const {

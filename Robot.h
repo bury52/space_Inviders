@@ -5,6 +5,8 @@
 #ifndef SPACE_INVADERS_ROBOT_H
 #define SPACE_INVADERS_ROBOT_H
 #include <algorithm>
+#include <iostream>
+#include <ranges>
 #include <vector>
 
 #include "enum.h"
@@ -27,6 +29,7 @@ public:
 
     void update(const sf::Time &elapsed);
 
+    bool can_shoot = false;
 private:
     float bullet_speed = 400;
     std::vector<sf::RectangleShape> bullets = {};
@@ -64,6 +67,7 @@ public:
                 turn = TurnState::Left;
             }
         }
+        update_can_shoot();
     };
 
     Enemy_Controller &add_enemy(const int &line) {
@@ -116,6 +120,20 @@ private:
             for (auto &enemy: enemy_line[i]) {
                 if (const std::shared_ptr<Robot> lock_enemy = enemy.lock()) {
                     lock_enemy->setPosition({lock_enemy->getPosition().x, enemy_y[i]});
+                }
+            }
+        }
+    }
+
+    void update_can_shoot() {
+        std::vector<float> occupied_lines;
+        for (const auto& line : enemy_line | std::ranges::views::reverse) {
+            for (const auto& enemy_ : line) {
+                if (const std::shared_ptr<Robot> lock_enemy = enemy_.lock()) {
+                    if (std::ranges::none_of(occupied_lines,[&](const float& occupied_x) {return occupied_x == lock_enemy->getPosition().x;})) {
+                        lock_enemy->can_shoot = true;
+                        occupied_lines.push_back(lock_enemy->getPosition().x);
+                    }
                 }
             }
         }
