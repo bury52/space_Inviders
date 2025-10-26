@@ -52,6 +52,7 @@ public:
                 robot->move({elapsed.asSeconds() * -robot_speed, 0});
             }
             if (std::ranges::any_of(current_enemy, [&](const auto &enemy_) {return enemy_->getPosition().x < border_x.x;})) {
+                update_y();
                 turn = TurnState::Right;
             }
         } else if (turn == TurnState::Right) {
@@ -59,6 +60,7 @@ public:
                 robot->move({elapsed.asSeconds() * robot_speed, 0});
             }
             if (std::ranges::any_of(current_enemy, [&](const auto &enemy_) {return enemy_->getPosition().x + enemy_->getSize_x() > border_x.y;})) {
+                update_y();
                 turn = TurnState::Left;
             }
         }
@@ -89,14 +91,32 @@ public:
     sf::Vector2f border_x;
 
 private:
-    void set_position_in_line(std::vector<std::weak_ptr<Robot> > &current_line, const int &line) {
+    static void delete_expired(std::vector<std::weak_ptr<Robot> > &current_line) {
         erase_if(current_line, [](const std::weak_ptr<Robot> &enemy) { return enemy.expired(); });
+    }
+
+    void set_position_in_line(std::vector<std::weak_ptr<Robot> > &current_line, const int &line) {
+        delete_expired(current_line);
         float size_x = static_cast<float>(robot_texture->getSize().x) * robot_scale;
         float x_position = border_x.x;
         for (auto &enemy: current_line) {
             if (const std::shared_ptr<Robot> lock_enemy = enemy.lock()) {
                 lock_enemy->setPosition({x_position, enemy_y[line]});
                 x_position += size_x + 10;
+            }
+        }
+    }
+
+    void update_y() {
+        delete_expired(enemy_line.back());
+        if (enemy_line.back().empty()) {
+            std::ranges::rotate(enemy_line,enemy_line.end()-1);
+        }
+        for (int i = 0; i < enemy_line.size(); ++i) {
+            for (auto &enemy: enemy_line[i]) {
+                if (const std::shared_ptr<Robot> lock_enemy = enemy.lock()) {
+                    lock_enemy->setPosition({lock_enemy->getPosition().x, enemy_y[i]});
+                }
             }
         }
     }

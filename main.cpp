@@ -13,7 +13,8 @@ int main() {
     window.setKeyRepeatEnabled(false);
 
     std::vector<std::shared_ptr<Robot> > current_enemy = {};
-    Enemy_Controller enemy_controller(current_enemy, {0, 50, 100, 150, 200, 250},
+    Enemy_Controller enemy_controller(current_enemy,
+                                      {0, 50, 100, 150, 200, 250,300,350,400,450,500},
                                       {10, static_cast<float>(window.getSize().x) - 10});
 
     enemy_controller
