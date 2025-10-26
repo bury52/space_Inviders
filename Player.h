@@ -11,7 +11,7 @@
 
 class Player : public sf::Drawable, public sf::Transformable {
 public:
-    explicit Player(const sf::Vector2f &border_x, std::vector<Robot> &enemy)
+    explicit Player(const sf::Vector2f &border_x, std::vector<std::shared_ptr<Robot> > &enemy)
         : border_x(border_x), enemy(enemy), texture("statek.png"), sprite(texture) {
         setScale({5, 5});
     }
@@ -64,13 +64,12 @@ public:
             auto bullet_rect = bullet.getGlobalBounds();
 
             bool collided = std::erase_if(enemy, [&](auto &enemy) {
-                auto enemy_rect = enemy.getGlobalBounds();
+                auto enemy_rect = enemy->getGlobalBounds();
                 return enemy_rect.findIntersection(bullet_rect).has_value();
             }) > 0;
 
             return collided || bullet.getPosition().y < 0;
         });
-
     }
 
 private:
@@ -78,7 +77,7 @@ private:
     float player_speed = 400;
     float bullet_speed = 600;
     std::vector<sf::RectangleShape> bullets = {};
-    std::vector<Robot> &enemy;
+    std::vector<std::shared_ptr<Robot> > &enemy;
     sf::Vector2f border_x;
     sf::Texture texture;
     sf::Sprite sprite;

@@ -12,17 +12,17 @@ int main() {
     window.setPosition({10, 10});
     window.setKeyRepeatEnabled(false);
 
-    std::shared_ptr<sf::Texture> robot_texture = std::make_shared<sf::Texture>("robak.png");
+    std::vector<std::shared_ptr<Robot> > current_enemy = {};
+    Enemy_Controller enemy_controller({0, 50, 100, 150, 200, 250});
+    Enemy_Factory enemy_factory(current_enemy, enemy_controller, {10, static_cast<float>(window.getSize().x) - 10});
 
-    std::vector<float> enemy_y = {0,50,100,150,200,250};
-    std::vector<Robot> enemy = {
-        Robot({10, static_cast<float>(window.getSize().x) - 10},10.0, enemy_y.begin(), enemy_y.end()-1, robot_texture),
-        Robot({10, static_cast<float>(window.getSize().x) - 10},80.0, enemy_y.begin(), enemy_y.end()-1, robot_texture),
-        Robot({10, static_cast<float>(window.getSize().x) - 10},10.0, enemy_y.begin()+1, enemy_y.end(), robot_texture)
-    };
+    enemy_factory
+    .add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0)
+    .add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1)
+    .add_enemy(2).add_enemy(2).add_enemy(2).add_enemy(2);
 
 
-    Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, enemy);
+    Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, current_enemy);
     set_y_for_player(player, window.getSize().y);
 
     sf::Clock clock;
@@ -44,16 +44,16 @@ int main() {
         sf::Time restart = clock.restart();
 
         player.update(restart);
-        for (auto &robot: enemy) {
-            robot.update(restart);
-        }
 
+        for (const auto &enemy: current_enemy) {
+            enemy->update(restart);
+        }
 
         window.clear();
 
         window.draw(player);
-        for (auto &robot: enemy) {
-            window.draw(robot);
+        for (const auto &enemy: current_enemy) {
+            window.draw(*enemy);
         }
         window.display();
     }
