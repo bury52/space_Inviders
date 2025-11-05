@@ -18,7 +18,8 @@ add_executable(space_invaders main.cpp
         util.h
         Player.h
         Robot.h
-        Robot.cpp)
+        Robot.cpp
+        concepts.h)
 target_link_libraries(space_invaders PRIVATE SFML::Graphics SFML::Audio)
 
 install(TARGETS ${PROJECT_NAME}

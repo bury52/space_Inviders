@@ -23,14 +23,16 @@ class Robot : public sf::Drawable, public sf::Transformable {
 public:
     explicit Robot(const std::shared_ptr<sf::Texture> &texture,const float& scale);
 
-    sf::FloatRect getGlobalBounds() const;
+    sf::FloatRect get_bounds() const;
 
     float getSize_x() const;
 
-    void update(const sf::Time &elapsed);
+    void update(const sf::Time &elapsed,const sf::FloatRect &player);
 
     bool can_shoot = false;
 private:
+    sf::Time bullet_delay = sf::seconds(3);
+    sf::Time time_from_shot = sf::seconds(0);
     float bullet_speed = 400;
     std::vector<sf::RectangleShape> bullets = {};
     std::shared_ptr<sf::Texture> texture;

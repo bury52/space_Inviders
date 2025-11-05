@@ -11,14 +11,18 @@
 
 class Player : public sf::Drawable, public sf::Transformable {
 public:
-    explicit Player(const sf::Vector2f &border_x, std::vector<std::shared_ptr<Robot> > &enemy)
+    explicit Player(const sf::Vector2f &border_x, std::vector<std::shared_ptr<Robot> > &enemy,const float& scale)
         : border_x(border_x), enemy(enemy), texture("statek.png"), sprite(texture) {
-        setScale({5, 5});
+        setScale({scale, scale});
     }
 
     float getSize_x() const {
         return (static_cast<float>(texture.getSize().x) * getScale().x);
     }
+
+    sf::FloatRect get_bounds() const {
+        return getTransform().transformRect(sprite.getGlobalBounds());
+    };
 
     void onKeyPressed(const sf::Event::KeyPressed &event) {
         if (event.scancode == sf::Keyboard::Scancode::A) {
@@ -56,7 +60,7 @@ public:
 
 
         for (auto &bullet: bullets) {
-            bullet.move({0, elapsed.asSeconds() * bullet_speed * -1});
+            bullet.move({0, elapsed.asSeconds() * -bullet_speed});
         }
 
 
@@ -64,7 +68,7 @@ public:
             auto bullet_rect = bullet.getGlobalBounds();
 
             bool collided = std::erase_if(enemy, [&](auto &enemy) {
-                auto enemy_rect = enemy->getGlobalBounds();
+                auto enemy_rect = enemy->get_bounds();
                 return enemy_rect.findIntersection(bullet_rect).has_value();
             }) > 0;
 

@@ -7,7 +7,7 @@ Robot::Robot(const std::shared_ptr<sf::Texture> &texture, const float &scale) : 
     setScale({scale, scale});
 }
 
-sf::FloatRect Robot::getGlobalBounds() const {
+sf::FloatRect Robot::get_bounds() const {
     return getTransform().transformRect(sprite.getGlobalBounds());
 }
 
@@ -15,9 +15,19 @@ float Robot::getSize_x() const {
     return (static_cast<float>(texture->getSize().x) * getScale().x);
 }
 
-void Robot::update(const sf::Time &elapsed) {
-    if (can_shoot) {
-        sprite.setColor(sf::Color::Red);
+void Robot::update(const sf::Time &elapsed, const sf::FloatRect &player) {
+    if (!can_shoot)
+        return;
+
+    sprite.setColor(sf::Color::Red); 
+    time_from_shot += elapsed;
+    if (time_from_shot >= bullet_delay && get_bounds().getCenter().x - 5 < player.getCenter().x && get_bounds().getCenter().x + 5 > player.getCenter().x ) {
+        auto &bullet = bullets.emplace_back(sf::Vector2f(getScale().x, getScale().y * 3));
+        bullet.setPosition({get_bounds().getCenter().x, getPosition().y});
+        time_from_shot = sf::seconds(0);
+    }
+    for (auto &bullet: bullets) {
+        bullet.move({0, elapsed.asSeconds() * bullet_speed});
     }
 }
 

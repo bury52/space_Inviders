@@ -24,7 +24,7 @@ int main() {
             .set_start_position();
 
 
-    Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, current_enemy);
+    Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, current_enemy,5);
     set_y_for_player(player, window.getSize().y);
 
     sf::Clock clock;
@@ -50,7 +50,7 @@ int main() {
         enemy_controller.update(restart);
 
         for (const auto &enemy: current_enemy) {
-            enemy->update(restart);
+            enemy->update(restart,player.get_bounds());
         }
 
         window.clear();
