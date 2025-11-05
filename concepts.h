@@ -13,5 +13,14 @@ concept CollisionObject = requires(const T& obj)
     { obj.get_bounds() } -> std::same_as<sf::FloatRect>;
 };
 
+template <typename T,typename R>
+concept CollisionWith = requires(T& obj,R& collider)
+{
+    obj.collision(collider);
+};
+
+template<typename T,typename R>
+concept CollisionObjectWith = CollisionObject<T> && CollisionWith<T,R>;
+
 
 #endif //SPACE_INVADERS_CONCEPTS_H
