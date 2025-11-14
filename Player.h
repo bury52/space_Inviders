@@ -22,7 +22,7 @@ public:
     };
 
     void collision(Bullet& collider) {
-        std::cout << "collision" << std::endl;
+        sprite.setColor(sf::Color::Red);
     }
 
     void onKeyPressed(const sf::Event::KeyPressed &event) {

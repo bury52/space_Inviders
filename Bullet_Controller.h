@@ -67,9 +67,10 @@ public:
                     if (!target_.has_value())
                         return false;
 
-                    if constexpr (CollisionObjectWith<T, Bullet>) {
-                        sf::FloatRect target_bounds = target_.value().get_bounds();
+                    if constexpr (CollisionObjectWith<typename T::type, Bullet>) {
+                        sf::FloatRect target_bounds = target_.value().get().get_bounds();
                         if (wraperr.bullet.get_bounds().findIntersection(target_bounds).has_value()) {
+                            target_.value().get().collision(wraperr.bullet);
                             return true;
                         }
                     }
