@@ -2,12 +2,13 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
+#include "Bullet.h"
+#include "Bullet_Controller.h"
 #include "Player.h"
 #include "Robot.h"
 #include "util.h"
 
 int main() {
-
     const auto res = Res();
     std::vector<std::shared_ptr<Robot> > current_enemy = {};
 
@@ -16,7 +17,7 @@ int main() {
     window.setKeyRepeatEnabled(false);
 
     Enemy_Controller enemy_controller(current_enemy,
-                                      {0, 50, 100, 150, 200, 250,300,350,400,450,500},
+                                      {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500},
                                       {10, static_cast<float>(window.getSize().x) - 10},
                                       res);
 
@@ -27,8 +28,11 @@ int main() {
             .set_start_position();
 
 
-    Player player = Player({10, static_cast<float>(window.getSize().x) - 10},5,res);
+    Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, 5, res);
     set_y_for_player(player, window.getSize().y);
+
+    Bullet_Controller<std::reference_wrapper<Player> > bullet_controller = {};
+    auto buller_helper_robot = bullet_controller.get_helper(std::reference_wrapper<Player>(player));
 
     sf::Clock clock;
 
@@ -48,13 +52,15 @@ int main() {
         }
         sf::Time restart = clock.restart();
 
-        player.update(restart,current_enemy);
+        player.update(restart, current_enemy);
 
         enemy_controller.update(restart);
 
         for (const auto &enemy: current_enemy) {
-            enemy->update(restart,player);
+            enemy->update(restart, player, buller_helper_robot);
         }
+
+        bullet_controller.update(restart);
 
         window.clear();
 
@@ -62,6 +68,8 @@ int main() {
         for (const auto &enemy: current_enemy) {
             window.draw(*enemy);
         }
+        window.draw(bullet_controller);
+
         window.display();
     }
 };

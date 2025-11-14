@@ -31,7 +31,7 @@ public:
         return getTransform().transformRect(sprite.getGlobalBounds());
     }
 
-    void update(const sf::Time &elapsed, CollisionObjectWith<sf::RectangleShape> auto &player) {
+    void update(const sf::Time &elapsed, CollisionObject auto &player,Shooter auto &shooter) {
         if (!can_shoot)
             return;
 
@@ -42,15 +42,8 @@ public:
         if (time_from_shot >= bullet_delay && get_bounds().getCenter().x - 5 < player_bounds.getCenter().x &&
             get_bounds().
             getCenter().x + 5 > player_bounds.getCenter().x) {
-            auto &bullet = bullets.emplace_back(sf::Vector2f(getScale().x, getScale().y * 3));
-            bullet.setPosition({get_bounds().getCenter().x, getPosition().y});
+            shooter.shoot(TurnState::Down,sf::Vector2f(get_bounds().getCenter().x, getPosition().y),bullet_speed);
             time_from_shot = sf::seconds(0);
-        }
-        for (auto &bullet: bullets) {
-            bullet.move({0, elapsed.asSeconds() * bullet_speed});
-            if (player_bounds.findIntersection(bullet.getGlobalBounds())) {
-                player.collision(bullet);
-            }
         }
     };
 

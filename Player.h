@@ -21,7 +21,7 @@ public:
         return getTransform().transformRect(sprite.getGlobalBounds());
     };
 
-    void collision(sf::RectangleShape& collider) {
+    void collision(Bullet& collider) {
         std::cout << "collision" << std::endl;
     }
 
