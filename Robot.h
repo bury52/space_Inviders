@@ -31,9 +31,7 @@ public:
         return getTransform().transformRect(sprite.getGlobalBounds());
     }
 
-
-
-    void update(const sf::Time &elapsed,CollisionObjectWith<sf::RectangleShape> auto &player) {
+    void update(const sf::Time &elapsed, CollisionObjectWith<sf::RectangleShape> auto &player) {
         if (!can_shoot)
             return;
 
@@ -41,7 +39,8 @@ public:
 
         sprite.setColor(sf::Color::Red);
         time_from_shot += elapsed;
-        if (time_from_shot >= bullet_delay && get_bounds().getCenter().x - 5 < player_bounds.getCenter().x && get_bounds().
+        if (time_from_shot >= bullet_delay && get_bounds().getCenter().x - 5 < player_bounds.getCenter().x &&
+            get_bounds().
             getCenter().x + 5 > player_bounds.getCenter().x) {
             auto &bullet = bullets.emplace_back(sf::Vector2f(getScale().x, getScale().y * 3));
             bullet.setPosition({get_bounds().getCenter().x, getPosition().y});
