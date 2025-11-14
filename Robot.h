@@ -9,6 +9,7 @@
 #include <ranges>
 #include <vector>
 
+#include "Bullet.h"
 #include "concepts.h"
 #include "enum.h"
 #include "structs.h"
@@ -19,8 +20,6 @@
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/System/Time.hpp"
 
-class Enemy_Controller;
-
 class Robot : public sf::Drawable, public sf::Transformable {
 public:
     explicit Robot(const Res &res, const float &scale) : sprite(res.robot) {
@@ -29,6 +28,10 @@ public:
 
     sf::FloatRect get_bounds() const {
         return getTransform().transformRect(sprite.getGlobalBounds());
+    }
+
+    void collision(Bullet& collider) {
+        sprite.setColor(sf::Color::Blue);
     }
 
     void update(const sf::Time &elapsed, CollisionObject auto &player,Shooter auto &shooter) {
@@ -53,16 +56,12 @@ private:
     sf::Time bullet_delay = sf::seconds(3);
     sf::Time time_from_shot = sf::seconds(0);
     float bullet_speed = 400;
-    std::vector<sf::RectangleShape> bullets = {};
     sf::Sprite sprite;
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         states.transform *= getTransform();
         target.draw(sprite, states);
-        for (const auto &bullet: bullets) {
-            target.draw(bullet);
-        }
     };
 };
 

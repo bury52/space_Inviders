@@ -31,8 +31,8 @@ int main() {
     Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, 5, res);
     set_y_for_player(player, window.getSize().y);
 
-    Bullet_Controller<std::reference_wrapper<Player> > bullet_controller = {};
-    auto buller_helper_robot = bullet_controller.get_helper(std::reference_wrapper<Player>(player));
+    Bullet_Controller<Player> bullet_controller = {};
+    auto buller_helper_robot = bullet_controller.get_helper(player);
 
     sf::Clock clock;
 

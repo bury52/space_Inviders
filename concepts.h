@@ -7,6 +7,7 @@
 #include "SFML/Graphics/Rect.hpp"
 #include "type_traits"
 #include "enum.h"
+#include <memory>
 
 template<typename T>
 concept CollisionObject = requires(const T &obj)
@@ -28,5 +29,12 @@ concept Shooter = requires(T &obj, const TurnState &turn, const sf::Vector2f &st
 {
     { obj.shoot(turn, start_position, bullet_speed) } -> std::same_as<void>;
 };
+
+template<typename T>
+concept SmartOrRawPointer =
+        std::is_pointer_v<T> ||
+        (requires { typename T::element_type; } &&
+         (std::same_as<T, std::unique_ptr<typename T::element_type> > ||
+          std::same_as<T, std::shared_ptr<typename T::element_type> >));
 
 #endif //SPACE_INVADERS_CONCEPTS_H
