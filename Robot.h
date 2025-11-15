@@ -31,7 +31,11 @@ public:
     }
 
     void collision(Bullet& collider) {
-        sprite.setColor(sf::Color::Blue);
+        should_remove = true;
+    }
+
+    bool shouldRemove() const {
+        return should_remove;
     }
 
     void update(const sf::Time &elapsed, CollisionObject auto &player,Shooter auto &shooter) {
@@ -56,7 +60,9 @@ private:
     sf::Time bullet_delay = sf::seconds(3);
     sf::Time time_from_shot = sf::seconds(0);
     float bullet_speed = 400;
+    bool should_remove = false;
     sf::Sprite sprite;
+
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {

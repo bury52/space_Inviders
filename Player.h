@@ -25,14 +25,13 @@ public:
         sprite.setColor(sf::Color::Red);
     }
 
-    void onKeyPressed(const sf::Event::KeyPressed &event) {
+    void onKeyPressed(const sf::Event::KeyPressed &event, Shooter auto& shooter) {
         if (event.scancode == sf::Keyboard::Scancode::A) {
             turn = TurnState::Left;
         } else if (event.scancode == sf::Keyboard::Scancode::D) {
             turn = TurnState::Right;
         } else if (event.scancode == sf::Keyboard::Scancode::W) {
-            auto &bullet = bullets.emplace_back(sf::Vector2f(getScale().x, getScale().y * 3));
-            bullet.setPosition({getPosition().x + (get_bounds().size.x / 2), getPosition().y});
+            shooter.shoot(TurnState::Up, sf::Vector2f(get_bounds().getCenter().x,get_bounds().position.y),bullet_speed);
         }
     }
 
@@ -43,8 +42,7 @@ public:
         }
     }
 
-    template<CollisionObject Enemy>
-    void update(const sf::Time &elapsed,std::vector<std::shared_ptr<Enemy> > &enemy) {
+    void update(const sf::Time &elapsed) {
         if (turn == TurnState::Left) {
             move({elapsed.asSeconds() * -player_speed, 0});
         } else if (turn == TurnState::Right) {
@@ -59,28 +57,12 @@ public:
                 setPosition({border_position_x, getPosition().y});
             }
         }
-
-        for (auto &bullet: bullets) {
-            bullet.move({0, elapsed.asSeconds() * -bullet_speed});
-        }
-
-        std::erase_if(bullets, [&](auto &bullet) {
-            auto bullet_rect = bullet.getGlobalBounds();
-
-            bool collided = std::erase_if(enemy, [&](auto &enemy_) {
-                auto enemy_rect = enemy_->get_bounds();
-                return enemy_rect.findIntersection(bullet_rect).has_value();
-            }) > 0;
-
-            return collided || bullet.getPosition().y < 0;
-        });
     }
 
 private:
     TurnState turn = TurnState::None;
     float player_speed = 400;
     float bullet_speed = 600;
-    std::vector<sf::RectangleShape> bullets = {};
     sf::Vector2f border_x;
     const Res& res;
     sf::Sprite sprite;
@@ -90,9 +72,6 @@ protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         states.transform *= getTransform();
         target.draw(sprite, states);
-        for (const auto &bullet: bullets) {
-            target.draw(bullet);
-        }
     };
 };
 

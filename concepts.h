@@ -37,4 +37,9 @@ concept SmartOrRawPointer =
          (std::same_as<T, std::unique_ptr<typename T::element_type> > ||
           std::same_as<T, std::shared_ptr<typename T::element_type> >));
 
+template<typename T>
+concept Removable = requires(const T &obj) {
+    { obj.shouldRemove() } -> std::same_as<bool>;
+};
+
 #endif //SPACE_INVADERS_CONCEPTS_H

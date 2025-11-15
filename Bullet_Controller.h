@@ -101,8 +101,13 @@ private:
 
     template<typename T>
     static bool if_collided(std::vector<T> &target, Bullet &bullet) {
-        for (auto &t: target) {
-            if (if_collided(t, bullet)) return true;
+        for (auto it = target.begin(); it != target.end(); ++it) {
+            if (if_collided(*it, bullet)) {
+                if (tryRemove(*it)) {
+                    target.erase(it);
+                }
+                return true;
+            }
         }
         return false;
     };
@@ -113,6 +118,21 @@ private:
         return if_collided(*ptr, bullet);
     }
 
+    template<typename T>
+    static bool tryRemove(const T &element) {
+        return false;
+    };
+
+    template<Removable T>
+    static bool tryRemove(const T &element) {
+        return element.shouldRemove();
+    };
+
+    template<SmartOrRawPointer Ptr>
+    static bool tryRemove(const Ptr &ptr) {
+        if (!ptr) return true;
+        return tryRemove(*ptr);
+    }
 
     struct Bullet_Wraperr {
         std::tuple<std::optional<std::reference_wrapper<Target> >...> targets = {};

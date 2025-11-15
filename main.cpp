@@ -31,8 +31,9 @@ int main() {
     Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, 5, res);
     set_y_for_player(player, window.getSize().y);
 
-    Bullet_Controller<Player> bullet_controller = {};
-    auto buller_helper_robot = bullet_controller.get_helper(player);
+    Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> > > bullet_controller = {};
+    auto buller_helper_robot = bullet_controller.get_helper(player, std::nullopt);
+    auto buller_helper_player = bullet_controller.get_helper(std::nullopt, current_enemy);
 
     sf::Clock clock;
 
@@ -41,7 +42,7 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             } else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-                player.onKeyPressed(*keyPressed);
+                player.onKeyPressed(*keyPressed,buller_helper_player);
 
                 if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
                     window.close();
@@ -52,7 +53,7 @@ int main() {
         }
         sf::Time restart = clock.restart();
 
-        player.update(restart, current_enemy);
+        player.update(restart);
 
         enemy_controller.update(restart);
 
@@ -65,9 +66,11 @@ int main() {
         window.clear();
 
         window.draw(player);
+
         for (const auto &enemy: current_enemy) {
             window.draw(*enemy);
         }
+
         window.draw(bullet_controller);
 
         window.display();
