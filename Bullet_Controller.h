@@ -72,7 +72,7 @@ public:
                 }(targets_)) || ...);
             }, wraperr.targets);
 
-            return should_erase;
+            return should_erase && wraperr.bullet.damage <= 0;
         });
     }
 

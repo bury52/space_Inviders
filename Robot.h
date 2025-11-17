@@ -31,11 +31,17 @@ public:
     }
 
     void collision(Bullet& collider) {
-        should_remove = true;
+        if (collider.damage <= health) {
+            health -= collider.damage;
+            collider.damage = 0;
+        }else {
+            collider.damage -= health;
+            health = 0;
+        }
     }
 
     bool shouldRemove() const {
-        return should_remove;
+        return health <= 0;
     }
 
     void update(const sf::Time &elapsed, CollisionObject auto &player,Shooter auto &shooter) {
@@ -60,7 +66,7 @@ private:
     sf::Time bullet_delay = sf::seconds(3);
     sf::Time time_from_shot = sf::seconds(0);
     float bullet_speed = 400;
-    bool should_remove = false;
+    int health = 5;
     sf::Sprite sprite;
 
 

@@ -22,6 +22,7 @@ public:
     TurnState turn = TurnState::Up;
     sf::RectangleShape shape = sf::RectangleShape();
     float bullet_speed = 600;
+    int damage = 6;
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {

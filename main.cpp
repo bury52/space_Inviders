@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Robot.h"
 #include "util.h"
+#include "Wall.h"
 
 int main() {
     const auto res = Res();
@@ -27,13 +28,14 @@ int main() {
             .add_enemy(2).add_enemy(2).add_enemy(2).add_enemy(2)
             .set_start_position();
 
+    Wall wall = Wall({100.0f,800.0f},{5,1},25.0f);
 
     Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, 5, res);
     set_y_for_player(player, window.getSize().y);
 
-    Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> > > bullet_controller = {};
-    auto buller_helper_robot = bullet_controller.get_helper(player, std::nullopt);
-    auto buller_helper_player = bullet_controller.get_helper(std::nullopt, current_enemy);
+    Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> >,Wall > bullet_controller = {};
+    auto buller_helper_robot = bullet_controller.get_helper(player, std::nullopt, std::nullopt);
+    auto buller_helper_player = bullet_controller.get_helper(std::nullopt, current_enemy, wall);
 
     sf::Clock clock;
 
@@ -72,6 +74,8 @@ int main() {
         }
 
         window.draw(bullet_controller);
+
+        window.draw(wall);
 
         window.display();
     }
