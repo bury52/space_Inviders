@@ -15,14 +15,15 @@
 
 class Wall : public sf::Drawable {
 public:
-    Wall(const sf::Vector2f &position,const sf::Vector2i &segments, const float& scale)
-        : bounds(position, static_cast<sf::Vector2f>(segments) * scale) ,
-          scale(scale) {
+    Wall(const sf::Vector2f &position, const sf::Vector2i &segments, const float &scale)
+        : bounds(position, static_cast<sf::Vector2f>(segments) * scale) {
+        const sf::Vector2f scaleVector(scale, scale);
+
         for (int i = 0; i < segments.y; ++i) {
             const float segment_y = position.y + static_cast<float>(i) * scale;
             for (int j = 0; j < segments.x; ++j) {
                 const float segment_x = position.x + static_cast<float>(j) * scale;
-                wall_segment.emplace_back(sf::Vector2f{segment_x, segment_y});
+                wall_segment.emplace_back(scaleVector).setPosition({segment_x, segment_y});
             }
         }
     }
@@ -31,25 +32,36 @@ public:
         return bounds;
     };
 
-    void collision(Bullet& collider) {
-        collider.damage -= std::ranges::remove_if(wall_segment, [&](const sf::Vertex& segment) {
-           return collider.get_bounds().contains(segment.position);
-        }).size();
+    void collision(Bullet &collider) {
+        const float half_damage = collider.damage / 2;
+        auto damage_collider_position = collider.get_bounds().getCenter() - sf::Vector2f{
+                                            half_damage, half_damage
+                                        };
+        sf::FloatRect damage_collider = sf::FloatRect(damage_collider_position,
+                                                      static_cast<sf::Vector2f>(sf::Vector2i{
+                                                          collider.damage, collider.damage
+                                                      }));
+        auto delete_segments = std::ranges::remove_if(wall_segment, [&](const sf::RectangleShape &segment) -> bool {
+            return static_cast<bool>(damage_collider.findIntersection(segment.getGlobalBounds()));
+        });
+        collider.damage -= static_cast<int>(delete_segments.size());
     }
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
-        target.pushGLStates();
-        glPointSize(scale);
-        target.draw(wall_segment.data(), wall_segment.size(), sf::PrimitiveType::Points,states);
-        target.popGLStates();
+        sf::RectangleShape drawable(bounds.size);
+        drawable.setPosition(bounds.position);
+        drawable.setOutlineColor(sf::Color::Blue);
+        drawable.setFillColor(sf::Color::Red);
+        drawable.setOutlineThickness(2);
+        target.draw(drawable);
+        for (const auto &segment: wall_segment)
+            target.draw(segment, states);
     };
 
 public:
-    std::vector<sf::Vertex> wall_segment = {};
+    std::vector<sf::RectangleShape> wall_segment = {};
     sf::FloatRect bounds;
-    const float scale;
-
 };
 
 #endif //SPACE_INVADERS_WALL_H
