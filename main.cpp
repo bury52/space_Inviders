@@ -9,14 +9,27 @@
 #include "util.h"
 #include "Wall.h"
 
+#include <optional>
+
+#include "Button.h"
+
 int main() {
+
     const auto res = Res();
-    std::vector<std::shared_ptr<Robot> > current_enemy = {};
+
+    bool is_game_pause = true;
 
     sf::RenderWindow window(sf::VideoMode({1000, 1000}), "Space Invaders", sf::Style::Close);
     window.setPosition({10, 10});
     window.setKeyRepeatEnabled(false);
 
+    Button start_game_button = Button([&]() {
+        is_game_pause = false;
+    });
+
+    start_game_button.setPosition({100,100});
+
+    std::vector<std::shared_ptr<Robot> > current_enemy = {};
     Enemy_Controller enemy_controller(current_enemy,
                                       {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500},
                                       {10, static_cast<float>(window.getSize().x) - 10},
@@ -28,14 +41,21 @@ int main() {
             .add_enemy(2).add_enemy(2).add_enemy(2).add_enemy(2)
             .set_start_position();
 
-    Wall wall = Wall({100.0f,800.0f},{10,3},15.0f);
+    std::vector<Wall> walls = {
+        {{50.0f, 800.0f}, {10, 10}, 5.0f},
+        {{350.0f, 800.0f}, {10, 10}, 5.0f},
+        {{650.0f, 800.0f}, {10, 10}, 5.0f},
+        {{950.0f, 800.0f}, {10, 10}, 5.0f},
+    };
 
     Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, 5, res);
     set_y_for_player(player, window.getSize().y);
 
-    Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> >,Wall > bullet_controller = {};
-    auto buller_helper_robot = bullet_controller.get_helper(player, std::nullopt, wall);
-    auto buller_helper_player = bullet_controller.get_helper(std::nullopt, current_enemy, wall);
+    Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> >, std::vector<Wall> > bullet_controller = {};
+    auto buller_helper_robot = bullet_controller.get_helper(player, std::nullopt, walls);
+    auto buller_helper_player = bullet_controller.get_helper(std::nullopt, current_enemy, walls);
+
+
 
     sf::Clock clock;
 
@@ -44,39 +64,55 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             } else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-                player.onKeyPressed(*keyPressed,buller_helper_player);
+                if (!is_game_pause)
+                player.onKeyPressed(*keyPressed, buller_helper_player);
 
                 if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
-                    window.close();
+                    is_game_pause = true;
                 }
             } else if (const auto *keyReleased = event->getIf<sf::Event::KeyReleased>()) {
+                if (!is_game_pause)
                 player.onKeyReleased(*keyReleased);
+            } else if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>()) {
+                if (is_game_pause)
+                    start_game_button.onMouseButtonPressed(*mouseButtonPressed);
             }
         }
         sf::Time restart = clock.restart();
+        if (!is_game_pause) {
 
-        player.update(restart);
+            player.update(restart);
 
-        enemy_controller.update(restart);
+            enemy_controller.update(restart);
 
-        for (const auto &enemy: current_enemy) {
-            enemy->update(restart, player, buller_helper_robot);
+            for (const auto &enemy: current_enemy) {
+                enemy->update(restart, player, buller_helper_robot);
+            }
+
+            bullet_controller.update(restart);
+
+            window.clear();
+
+            window.draw(player);
+
+            for (const auto &enemy: current_enemy) {
+                window.draw(*enemy);
+            }
+
+            window.draw(bullet_controller);
+
+            for (const auto &wall: walls) {
+                window.draw(wall);
+            }
+            window.display();
+
+        }else {
+            window.clear();
+
+            window.draw(start_game_button);
+
+            window.display();
         }
 
-        bullet_controller.update(restart);
-
-        window.clear();
-
-        window.draw(player);
-
-        for (const auto &enemy: current_enemy) {
-            window.draw(*enemy);
-        }
-
-        window.draw(bullet_controller);
-
-        window.draw(wall);
-
-        window.display();
     }
 };

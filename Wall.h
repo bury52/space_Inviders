@@ -6,12 +6,10 @@
 #define SPACE_INVADERS_WALL_H
 #include <vector>
 
-#include "cmake-build-debug/_deps/sfml-src/extlibs/headers/glad/include/glad/gl.h"
 #include "SFML/Graphics/Drawable.hpp"
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/Graphics/RenderStates.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
-#include "SFML/Graphics/Vertex.hpp"
 
 class Wall : public sf::Drawable {
 public:
@@ -28,12 +26,12 @@ public:
         }
     }
 
-    sf::FloatRect get_bounds() const {
+    [[nodiscard]] sf::FloatRect get_bounds() const {
         return bounds;
     };
 
     void collision(Bullet &collider) {
-        const float half_damage = collider.damage / 2;
+        const float half_damage =  static_cast<float>(collider.damage) / 2.0f;
         auto damage_collider_position = collider.get_bounds().getCenter() - sf::Vector2f{
                                             half_damage, half_damage
                                         };
@@ -41,20 +39,13 @@ public:
                                                       static_cast<sf::Vector2f>(sf::Vector2i{
                                                           collider.damage, collider.damage
                                                       }));
-        auto delete_segments = std::ranges::remove_if(wall_segment, [&](const sf::RectangleShape &segment) -> bool {
+        collider.damage -= static_cast<int>(std::erase_if(wall_segment, [&](const sf::RectangleShape &segment) -> bool {
             return static_cast<bool>(damage_collider.findIntersection(segment.getGlobalBounds()));
-        });
-        collider.damage -= static_cast<int>(delete_segments.size());
+        }));
     }
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
-        sf::RectangleShape drawable(bounds.size);
-        drawable.setPosition(bounds.position);
-        drawable.setOutlineColor(sf::Color::Blue);
-        drawable.setFillColor(sf::Color::Red);
-        drawable.setOutlineThickness(2);
-        target.draw(drawable);
         for (const auto &segment: wall_segment)
             target.draw(segment, states);
     };

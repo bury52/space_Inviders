@@ -23,13 +23,20 @@ add_executable(space_invaders main.cpp
         structs.h
         Bullet.h
         Bullet_Controller.h
-        Wall.h)
+        Wall.h
+        Button.h)
 target_link_libraries(space_invaders PRIVATE SFML::Graphics SFML::Audio)
 
-install(TARGETS ${PROJECT_NAME}
-        RUNTIME DESTINATION bin
+add_custom_command(TARGET space_invaders POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/resources
+        $<TARGET_FILE_DIR:space_invaders>/resources
 )
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/
         DESTINATION bin/resources
+)
+
+install(TARGETS space_invaders
+        RUNTIME DESTINATION bin
 )

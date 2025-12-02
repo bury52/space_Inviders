@@ -1,0 +1,26 @@
+[Texture]
+[Texture.Robot]
+path = "robak.png"
+
+[Texture.Spaceship]
+path = "statek.png"
+
+[Entity]
+
+[Entity.Player]
+texture = "Robak"
+damage = 3
+health = 3
+
+[Entity.Enemy]
+texture = "Spaceship"
+damage = 3
+health = 3
+
+[Entity.Enemy_v2]
+texture = "Spaceship"
+damage = 5
+health = 3
+
+[Layout]
+
