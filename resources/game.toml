@@ -1,26 +1,31 @@
-[Texture]
-[Texture.Robot]
-path = "robak.png"
-
-[Texture.Spaceship]
-path = "statek.png"
+[Resources]
+texture = [
+    { name = "Robot", path = "robak.png" },
+    { name = "Spaceship", path = "statek.png" }
+]
 
 [Entity]
+enemy = [
+    { name = "v1", texture = "Robot",health = 3 ,damage = 1 },
+    { name = "v2", texture = "Robot",health = 4 ,damage = 3 }
+]
 
-[Entity.Player]
-texture = "Robak"
-damage = 3
-health = 3
-
-[Entity.Enemy]
-texture = "Spaceship"
-damage = 3
-health = 3
-
-[Entity.Enemy_v2]
-texture = "Spaceship"
-damage = 5
-health = 3
+player = [
+    { name = "level1", texture = "Spaceship",health = 3 ,damage = 3 }
+]
 
 [Layout]
+level = [
+    { name = "level_V1", layout = [
+        ["v2","v2","v2","v2"],
+        ["v1","v1","v1","v1"]
+    ]}
+]
 
+game = [
+    { name = "easy", levels = [
+        "level_V1",
+        "level_V1",
+        "level_V1"
+    ]}
+]
