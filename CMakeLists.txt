@@ -13,6 +13,13 @@ FetchContent_Declare(SFML
         SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
+FetchContent_Declare(
+        tomlplusplus
+        GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+        GIT_TAG v3.4.0
+)
+FetchContent_MakeAvailable(tomlplusplus)
+
 add_executable(space_invaders main.cpp
         enum.h
         util.h
@@ -24,8 +31,9 @@ add_executable(space_invaders main.cpp
         Bullet.h
         Bullet_Controller.h
         Wall.h
-        Button.h)
-target_link_libraries(space_invaders PRIVATE SFML::Graphics SFML::Audio)
+        Button.h
+        TomlReader.h)
+target_link_libraries(space_invaders PRIVATE SFML::Graphics SFML::Audio tomlplusplus::tomlplusplus)
 
 add_custom_command(TARGET space_invaders POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
