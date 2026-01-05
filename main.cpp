@@ -31,13 +31,14 @@ int main() {
     if (!font.openFromFile("resources/" + settings.font)) {
         return 2;
     }
+    font.setSmooth(false);
 
     sf::RenderWindow window(sf::VideoMode({settings.widthWindow, settings.heightWindow}), "Space Invaders",
                             sf::Style::Close);
     window.setPosition({10, 10});
     window.setKeyRepeatEnabled(false);
 
-    StartMenu start_menu = StartMenu(window.getSize(),font);
+    StartMenu start_menu = StartMenu(game,window.getSize(),font);
 
     //
     // Button start_game_button = Button([&]() {

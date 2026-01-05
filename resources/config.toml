@@ -32,5 +32,15 @@ game = [
         "level_V1",
         "level_V1",
         "level_V1"
+    ]},
+    { name = "easy2yyyyyyyyyyyyyyyyyyyyyyy", levels = [
+        "level_V1",
+        "level_V1",
+        "level_V1"
+    ]},
+    { name = "easy3", levels = [
+        "level_V1",
+        "level_V1",
+        "level_V1"
     ]}
 ]

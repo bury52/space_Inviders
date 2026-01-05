@@ -15,49 +15,32 @@ class Button : public sf::Drawable, public sf::Transformable {
 public:
     using Callback = std::function<void()>;
 
-    Button(const sf::Font& font,
-           const sf::String& label,
-           Callback cb)
-        : text(font,label) ,callback(std::move(cb))
-    {
-        button.setSize({120.f, 48.f});
-        button.setFillColor(sf::Color(70, 70, 70));
-
-        text.setCharacterSize(20);
-        text.setFillColor(sf::Color::White);
-
-        centerText();
+    explicit Button(std::unique_ptr<sf::Drawable> content, Callback cb = [] {
+                    })
+        : content(std::move(content)), callback(std::move(cb)) {
+        background.setSize({120.f, 48.f});
+        background.setFillColor(sf::Color(70, 70, 70));
     }
 
-    void onMouseButtonPressed(const sf::Event::MouseButtonPressed& event) {
-        if (getBounds().contains(
-            static_cast<sf::Vector2f>(event.position)))
-        {
-            callback();
+    void onMouseButtonPressed(const sf::Event::MouseButtonPressed &mouseEvent) {
+        if (getBounds().contains(static_cast<sf::Vector2f>(mouseEvent.position))) {
+            if (callback) callback();
         }
     }
 
     sf::FloatRect getBounds() const {
-        return getTransform().transformRect(button.getGlobalBounds());
+        return getTransform().transformRect(background.getGlobalBounds());
     }
 
-    // public
-    sf::RectangleShape button;
-    sf::Text text;
-
-private:
+    sf::RectangleShape background;
+    std::unique_ptr<sf::Drawable> content;
     Callback callback;
 
-    void centerText() {
-        text.setOrigin(text.getLocalBounds().getCenter());
-        text.setPosition(button.getLocalBounds().getCenter());
-    }
-
-protected:
-    void draw(sf::RenderTarget& t, sf::RenderStates s) const override {
-        s.transform *= getTransform();
-        t.draw(button, s);
-        t.draw(text, s);
+private:
+    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
+        states.transform *= getTransform();
+        target.draw(background, states);
+        target.draw(*content, states);
     }
 };
 
