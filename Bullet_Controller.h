@@ -58,8 +58,8 @@ public:
 
         erase_if(bullets, [&](Bullet_Wraperr &wraperr) {
             // TODO dostarczyć rozmiat okna zamiast 1000
-            if ((wraperr.bullet.turn == TurnState::Up && wraperr.bullet.get_bounds().position.y < 0) || (
-                    wraperr.bullet.turn == TurnState::Down && wraperr.bullet.get_bounds().position.y > 1000))
+            if ((wraperr.bullet.turn == TurnState::Up && wraperr.bullet.getBounds().position.y < 0) || (
+                    wraperr.bullet.turn == TurnState::Down && wraperr.bullet.getBounds().position.y > 1000))
                 return true;
 
             bool should_erase = false;
@@ -91,8 +91,8 @@ private:
 
     template<CollisionObjectWith<Bullet> T>
     static bool if_collided(T &target, Bullet &bullet) {
-        sf::FloatRect target_bounds = target.get_bounds();
-        if (bullet.get_bounds().findIntersection(target_bounds).has_value()) {
+        sf::FloatRect target_bounds = target.getBounds();
+        if (bullet.getBounds().findIntersection(target_bounds).has_value()) {
             target.collision(bullet);
             return true;
         }

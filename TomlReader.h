@@ -23,6 +23,21 @@ std::optional<std::tuple<std::invoke_result_t<Fs, toml::table>...> > create_form
 
 // --- loaders ---
 
+struct Settings_TOML {
+    unsigned int widthWindow;
+    unsigned int heightWindow;
+    std::string font;
+};
+
+inline Settings_TOML load_settings(const toml::table &tbl) {
+    Settings_TOML main_{
+        tbl["Settings"]["widthWindow"].value_or(1000U),
+        tbl["Settings"]["heightWindow"].value_or(1000U),
+        tbl["Settings"]["font"].value_or("")
+    };
+    return main_;
+}
+
 struct Texture_TOML {
     std::string name;
     std::string texture;

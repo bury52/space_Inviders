@@ -17,7 +17,7 @@ public:
         setScale({scale, scale});
     }
 
-    sf::FloatRect get_bounds() const {
+    sf::FloatRect getBounds() const {
         return getTransform().transformRect(sprite.getGlobalBounds());
     };
 
@@ -31,7 +31,7 @@ public:
         } else if (event.scancode == sf::Keyboard::Scancode::D) {
             turn = TurnState::Right;
         } else if (event.scancode == sf::Keyboard::Scancode::W) {
-            shooter.shoot(TurnState::Up, sf::Vector2f(get_bounds().getCenter().x,get_bounds().position.y),bullet_speed);
+            shooter.shoot(TurnState::Up, sf::Vector2f(getBounds().getCenter().x,getBounds().position.y),bullet_speed);
         }
     }
 
@@ -52,7 +52,7 @@ public:
         if (getPosition().x < border_x.x) {
             setPosition({border_x.x, getPosition().y});
         } else {
-            if (float border_position_x = border_x.y - get_bounds().size.x;
+            if (float border_position_x = border_x.y - getBounds().size.x;
                 getPosition().x > border_position_x) {
                 setPosition({border_position_x, getPosition().y});
             }

@@ -26,13 +26,13 @@ public:
         }
     }
 
-    [[nodiscard]] sf::FloatRect get_bounds() const {
+    [[nodiscard]] sf::FloatRect getBounds() const {
         return bounds;
     };
 
     void collision(Bullet &collider) {
         const float half_damage =  static_cast<float>(collider.damage) / 2.0f;
-        auto damage_collider_position = collider.get_bounds().getCenter() - sf::Vector2f{
+        auto damage_collider_position = collider.getBounds().getCenter() - sf::Vector2f{
                                             half_damage, half_damage
                                         };
         sf::FloatRect damage_collider = sf::FloatRect(damage_collider_position,

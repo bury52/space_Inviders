@@ -26,7 +26,7 @@ public:
         setScale({scale, scale});
     };
 
-    sf::FloatRect get_bounds() const {
+    sf::FloatRect getBounds() const {
         return getTransform().transformRect(sprite.getGlobalBounds());
     }
 
@@ -48,14 +48,14 @@ public:
         if (!can_shoot)
             return;
 
-        const sf::FloatRect player_bounds = player.get_bounds();
+        const sf::FloatRect player_bounds = player.getBounds();
 
         sprite.setColor(sf::Color::Red);
         time_from_shot += elapsed;
-        if (time_from_shot >= bullet_delay && get_bounds().getCenter().x - 5 < player_bounds.getCenter().x &&
-            get_bounds().
+        if (time_from_shot >= bullet_delay && getBounds().getCenter().x - 5 < player_bounds.getCenter().x &&
+            getBounds().
             getCenter().x + 5 > player_bounds.getCenter().x) {
-            shooter.shoot(TurnState::Down,sf::Vector2f(get_bounds().getCenter().x, getPosition().y),bullet_speed);
+            shooter.shoot(TurnState::Down,sf::Vector2f(getBounds().getCenter().x, getPosition().y),bullet_speed);
             time_from_shot = sf::seconds(0);
         }
     };
@@ -103,7 +103,7 @@ public:
             }
 
             if (std::ranges::any_of(current_enemy, [&](const auto &enemy_) {
-                return get_right_bound(enemy_->get_bounds()) > border_x.y;
+                return get_right_bound(enemy_->getBounds()) > border_x.y;
             })) {
                 update_y();
                 turn = TurnState::Left;

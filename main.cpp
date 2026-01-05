@@ -12,29 +12,33 @@
 #include <optional>
 
 #include "Button.h"
+#include "StartMenu.h"
 #include "TomlReader.h"
 
 int main() {
-
     auto toml = create_form_toml(
         "resources/config.toml",
+        load_settings,
         load_textures,
         load_enemy,
         load_player,
         load_level,
         load_game);
     if (!toml) return 1;
-    auto& [textures,enemy,player,level,game] = toml.value();
+    auto &[settings,textures,enemy,player,level,game] = toml.value();
 
+    sf::Font font;
+    if (!font.openFromFile("resources/" + settings.font)) {
+        return 2;
+    }
 
+    sf::RenderWindow window(sf::VideoMode({settings.widthWindow, settings.heightWindow}), "Space Invaders",
+                            sf::Style::Close);
+    window.setPosition({10, 10});
+    window.setKeyRepeatEnabled(false);
 
-    // const auto res = Res();
-    //
-    // bool is_game_pause = true;
-    //
-    // sf::RenderWindow window(sf::VideoMode({1000, 1000}), "Space Invaders", sf::Style::Close);
-    // window.setPosition({10, 10});
-    // window.setKeyRepeatEnabled(false);
+    StartMenu start_menu = StartMenu(window.getSize(),font);
+
     //
     // Button start_game_button = Button([&]() {
     //     is_game_pause = false;
@@ -72,60 +76,66 @@ int main() {
     //
     // sf::Clock clock;
     //
-    // while (window.isOpen()) {
-    //     while (const std::optional event = window.pollEvent()) {
-    //         if (event->is<sf::Event::Closed>()) {
-    //             window.close();
-    //         } else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-    //             if (!is_game_pause)
-    //             player.onKeyPressed(*keyPressed, buller_helper_player);
-    //
-    //             if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
-    //                 is_game_pause = true;
-    //             }
-    //         } else if (const auto *keyReleased = event->getIf<sf::Event::KeyReleased>()) {
-    //             if (!is_game_pause)
-    //             player.onKeyReleased(*keyReleased);
-    //         } else if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>()) {
-    //             if (is_game_pause)
-    //                 start_game_button.onMouseButtonPressed(*mouseButtonPressed);
-    //         }
-    //     }
-    //     sf::Time restart = clock.restart();
-    //     if (!is_game_pause) {
-    //
-    //         player.update(restart);
-    //
-    //         enemy_controller.update(restart);
-    //
-    //         for (const auto &enemy: current_enemy) {
-    //             enemy->update(restart, player, buller_helper_robot);
-    //         }
-    //
-    //         bullet_controller.update(restart);
-    //
-    //         window.clear();
-    //
-    //         window.draw(player);
-    //
-    //         for (const auto &enemy: current_enemy) {
-    //             window.draw(*enemy);
-    //         }
-    //
-    //         window.draw(bullet_controller);
-    //
-    //         for (const auto &wall: walls) {
-    //             window.draw(wall);
-    //         }
-    //         window.display();
-    //
-    //     }else {
-    //         window.clear();
-    //
-    //         window.draw(start_game_button);
-    //
-    //         window.display();
-    //     }
-    //
-    // }
+    while (window.isOpen()) {
+        while (const std::optional event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
+                window.close();
+            }
+            // else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+            //     if (!is_game_pause)
+            //     player.onKeyPressed(*keyPressed, buller_helper_player);
+            //
+            //     if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
+            //         is_game_pause = true;
+            //     }
+            // } else if (const auto *keyReleased = event->getIf<sf::Event::KeyReleased>()) {
+            //     if (!is_game_pause)
+            //     player.onKeyReleased(*keyReleased);
+            // }
+            else if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>()) {
+                start_menu.onMouseButtonPressed(*mouseButtonPressed);
+            }
+        }
+
+        window.clear();
+        window.draw(start_menu);
+        window.display();
+
+        //     sf::Time restart = clock.restart();
+        //     if (!is_game_pause) {
+        //
+        //         player.update(restart);
+        //
+        //         enemy_controller.update(restart);
+        //
+        //         for (const auto &enemy: current_enemy) {
+        //             enemy->update(restart, player, buller_helper_robot);
+        //         }
+        //
+        //         bullet_controller.update(restart);
+        //
+        //         window.clear();
+        //
+        //         window.draw(player);
+        //
+        //         for (const auto &enemy: current_enemy) {
+        //             window.draw(*enemy);
+        //         }
+        //
+        //         window.draw(bullet_controller);
+        //
+        //         for (const auto &wall: walls) {
+        //             window.draw(wall);
+        //         }
+        //         window.display();
+        //
+        //     }else {
+        //         window.clear();
+        //
+        //         window.draw(start_game_button);
+        //
+        //         window.display();
+        //     }
+        //
+    }
 };

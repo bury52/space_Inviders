@@ -12,7 +12,7 @@
 template<typename T>
 concept CollisionObject = requires(const T &obj)
 {
-    { obj.get_bounds() } -> std::same_as<sf::FloatRect>;
+    { obj.getBounds() } -> std::same_as<sf::FloatRect>;
 };
 
 template<typename T, typename R>

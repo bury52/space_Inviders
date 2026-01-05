@@ -15,7 +15,7 @@
 
 class Bullet : public sf::Drawable, public sf::Transformable {
 public:
-    sf::FloatRect get_bounds() const {
+    sf::FloatRect getBounds() const {
         return getTransform().transformRect(shape.getGlobalBounds());
     };
 

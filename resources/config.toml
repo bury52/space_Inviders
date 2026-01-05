@@ -1,3 +1,8 @@
+[Settings]
+widthWindow = 1000
+heightWindow = 1000
+font = "Jersey10-Regular.ttf"
+
 [Resources]
 texture = [
     { name = "Robot", path = "robak.png" },
