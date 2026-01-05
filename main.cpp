@@ -12,6 +12,7 @@
 #include <optional>
 
 #include "Button.h"
+#include "Game.h"
 #include "StartMenu.h"
 #include "TomlReader.h"
 
@@ -25,7 +26,7 @@ int main() {
         load_level,
         load_game);
     if (!toml) return 1;
-    auto &[settings,textures,enemy,player,level,game] = toml.value();
+    auto &[settings,textures,enemy_template,player_template,level_template,game_template] = toml.value();
 
     sf::Font font;
     if (!font.openFromFile("resources/" + settings.font)) {
@@ -38,15 +39,9 @@ int main() {
     window.setPosition({10, 10});
     window.setKeyRepeatEnabled(false);
 
-    StartMenu start_menu = StartMenu(game,window.getSize(),font);
+    std::optional<Game> game = std::nullopt;
+    StartMenu start_menu = StartMenu(game,game_template,window.getSize(),font);
 
-    //
-    // Button start_game_button = Button([&]() {
-    //     is_game_pause = false;
-    // });
-    //
-    // start_game_button.setPosition({100,100});
-    //
     // std::vector<std::shared_ptr<Robot> > current_enemy = {};
     // Enemy_Controller enemy_controller(current_enemy,
     //                                   {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500},
@@ -82,14 +77,15 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
-            // else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-            //     if (!is_game_pause)
+            else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+            if (game) {
+                game->onKeyPressed(*keyPressed);
+            }
+                //     if (!is_game_pause)
             //     player.onKeyPressed(*keyPressed, buller_helper_player);
             //
-            //     if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
-            //         is_game_pause = true;
-            //     }
-            // } else if (const auto *keyReleased = event->getIf<sf::Event::KeyReleased>()) {
+            }
+            // else if (const auto *keyReleased = event->getIf<sf::Event::KeyReleased>()) {
             //     if (!is_game_pause)
             //     player.onKeyReleased(*keyReleased);
             // }
@@ -99,6 +95,9 @@ int main() {
         }
 
         window.clear();
+        if (game) {
+            window.draw(*game);
+        }
         window.draw(start_menu);
         window.display();
 
