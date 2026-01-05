@@ -15,7 +15,7 @@ public:
     sf::Font &font;
     sf::Text main_text;
     sf::Text game_text;
-    std::vector<Button> games_button = {};
+    std::vector<Button<sf::Text>> games_button = {};
 
     explicit StartMenu(const std::vector<Game_TOML> &games, sf::Vector2u window_size, sf::Font &font)
         : games(games)
@@ -33,12 +33,8 @@ public:
         game_text.setPosition({50, 150});
 
         games_button =  games | std::ranges::views::transform([&](const auto& e) {
-            auto content = std::make_unique<sf::Text>(font, e.name);
-            auto global_bounds = content->getGlobalBounds();
-            Button button = Button(std::move(content), []{});
-            button.background.setSize(global_bounds.size);
+            Button button = Button(std::make_unique<sf::Text>(font, e.name), [&]{ std::cout << e.name << std::endl; });
             return button;
-
         }) | std::ranges::to<std::vector>();
 
         float x = 50;
@@ -50,6 +46,9 @@ public:
     }
 
     void onMouseButtonPressed(const sf::Event::MouseButtonPressed &event) {
+        for (auto& button : games_button) {
+            button.onMouseButtonPressed(event);
+        }
     }
 
 protected:

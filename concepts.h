@@ -5,6 +5,7 @@
 #ifndef SPACE_INVADERS_CONCEPTS_H
 #define SPACE_INVADERS_CONCEPTS_H
 #include "SFML/Graphics/Rect.hpp"
+#include "SFML/Graphics/Drawable.hpp"
 #include "type_traits"
 #include "enum.h"
 #include <memory>
@@ -38,8 +39,28 @@ concept SmartOrRawPointer =
           std::same_as<T, std::shared_ptr<typename T::element_type> >));
 
 template<typename T>
-concept Removable = requires(const T &obj) {
+concept Removable = requires(const T &obj)
+{
     { obj.shouldRemove() } -> std::same_as<bool>;
 };
+
+// --- UI ---
+
+template<typename T>
+concept UIElement =
+        (CollisionObject<T> ||
+        requires(const T &obj)
+        {
+            { obj.getGlobalBounds() } -> std::same_as<sf::FloatRect>;
+        }) && std::derived_from<T,sf::Drawable>;
+
+template<UIElement T>
+sf::FloatRect UIElement_getBounds(T& obj) {
+    if constexpr (CollisionObject<T>){
+        return obj.getBounds();
+    } else {
+       return obj.getGlobalBounds();
+    }
+}
 
 #endif //SPACE_INVADERS_CONCEPTS_H

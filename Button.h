@@ -11,15 +11,14 @@
 #include "SFML/Graphics/Transformable.hpp"
 #include "SFML/Window/Event.hpp"
 
+template<UIElement T>
 class Button : public sf::Drawable, public sf::Transformable {
 public:
     using Callback = std::function<void()>;
 
-    explicit Button(std::unique_ptr<sf::Drawable> content, Callback cb = [] {
+    explicit Button(std::unique_ptr<T> content, Callback cb = [] {
                     })
-        : content(std::move(content)), callback(std::move(cb)) {
-        background.setSize({120.f, 48.f});
-        background.setFillColor(sf::Color(70, 70, 70));
+        : content_(std::move(content)), callback(std::move(cb)) {
     }
 
     void onMouseButtonPressed(const sf::Event::MouseButtonPressed &mouseEvent) {
@@ -29,18 +28,16 @@ public:
     }
 
     sf::FloatRect getBounds() const {
-        return getTransform().transformRect(background.getGlobalBounds());
+        return getTransform().transformRect(UIElement_getBounds(*content_));
     }
 
-    sf::RectangleShape background;
-    std::unique_ptr<sf::Drawable> content;
+    std::unique_ptr<T> content_;
     Callback callback;
 
 private:
-    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         states.transform *= getTransform();
-        target.draw(background, states);
-        target.draw(*content, states);
+        target.draw(*content_, states);
     }
 };
 
