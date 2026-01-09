@@ -62,6 +62,7 @@ struct Entity_TOML {
     std::string texture;
     int health;
     int damage;
+    int bulletSpeed;
 };
 
 inline std::vector<Entity_TOML> load_enemy(const toml::table &tbl) {
@@ -71,7 +72,7 @@ inline std::vector<Entity_TOML> load_enemy(const toml::table &tbl) {
         entity_array->for_each([&](auto &&el) {
             if constexpr (toml::is_table<decltype(el)>) {
                 entity.emplace_back(el["name"].value_or(""), el["texture"].value_or(""), el["health"].value_or(0),
-                                    el["damage"].value_or(0));
+                                    el["damage"].value_or(0), el["bulletSpeed"].value_or(400));
             }
         });
     }
@@ -86,7 +87,7 @@ inline std::vector<Entity_TOML> load_player(const toml::table &tbl) {
         entity_array->for_each([&](auto &&el) {
             if constexpr (toml::is_table<decltype(el)>) {
                 entity.emplace_back(el["name"].value_or(""), el["texture"].value_or(""), el["health"].value_or(0),
-                                    el["damage"].value_or(0));
+                                    el["damage"].value_or(0), el["bulletSpeed"].value_or(600));
             }
         });
     }
@@ -96,7 +97,9 @@ inline std::vector<Entity_TOML> load_player(const toml::table &tbl) {
 
 struct Level_TOML {
     std::string name;
+    std::string player;
     std::vector<std::vector<std::string> > layout;
+    std::vector<int> lines;
 };
 
 inline std::vector<Level_TOML> load_level(const toml::table &tbl) {
@@ -107,6 +110,7 @@ inline std::vector<Level_TOML> load_level(const toml::table &tbl) {
             if constexpr (toml::is_table<decltype(el)>) {
                 Level_TOML lvl;
                 lvl.name = el["name"].value_or("");
+                lvl.player = el["player"].value_or("");
 
                 if (auto layout_array = el["layout"].as_array()) {
                     for (auto &&row: *layout_array) {
@@ -118,6 +122,14 @@ inline std::vector<Level_TOML> load_level(const toml::table &tbl) {
                             }
                         }
                         lvl.layout.push_back(std::move(row_vec));
+                    }
+                }
+
+                if (auto lines_array = el["lines"].as_array()) {
+                    for (auto &&line: *lines_array) {
+                        if (std::optional<int> current = line.value<int>()) {
+                            lvl.lines.push_back(*current);
+                        }
                     }
                 }
 

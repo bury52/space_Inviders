@@ -22,7 +22,7 @@
 
 class Robot : public sf::Drawable, public sf::Transformable {
 public:
-    explicit Robot(const Res &res, const float &scale) : sprite(res.robot) {
+    explicit Robot(const sf::Texture &texture, const float &scale) : sprite(texture) {
         setScale({scale, scale});
     };
 
@@ -55,19 +55,20 @@ public:
         if (time_from_shot >= bullet_delay && getBounds().getCenter().x - 5 < player_bounds.getCenter().x &&
             getBounds().
             getCenter().x + 5 > player_bounds.getCenter().x) {
-            shooter.shoot(TurnState::Down,sf::Vector2f(getBounds().getCenter().x, getPosition().y),bullet_speed);
+            shooter.shoot(TurnState::Down,sf::Vector2f(getBounds().getCenter().x, getPosition().y),bullet_speed,damage);
             time_from_shot = sf::seconds(0);
         }
     };
 
     bool can_shoot = false;
-
 private:
     sf::Time bullet_delay = sf::seconds(3);
     sf::Time time_from_shot = sf::seconds(0);
     float bullet_speed = 400;
     int health = 5;
+    int damage = 3;
     sf::Sprite sprite;
+
 
 
 protected:
@@ -81,9 +82,9 @@ protected:
 class Enemy_Controller {
 public:
     explicit Enemy_Controller(std::vector<std::shared_ptr<Robot> > &current_enemy, const std::vector<float> &enemy_y,
-                              const sf::Vector2f &border_x, const Res &res)
+                              const sf::Vector2f &border_x)
         : current_enemy(current_enemy), enemy_y(enemy_y),
-          enemy_line(enemy_y.size(), std::vector<std::weak_ptr<Robot> >()), border_x(border_x), res(res) {
+          enemy_line(enemy_y.size(), std::vector<std::weak_ptr<Robot> >()), border_x(border_x) {
     }
 
     void update(const sf::Time &elapsed) {
@@ -112,9 +113,9 @@ public:
         update_can_shoot();
     };
 
-    Enemy_Controller &add_enemy(const int &line) {
-        auto robot = std::make_shared<Robot>(res, robot_scale);
-        erase_if(enemy_line[line], [](const std::weak_ptr<Robot> &enemy) { return enemy.expired(); });
+    Enemy_Controller &add_enemy(const int &line,const sf::Texture &texture) {
+        auto robot = std::make_shared<Robot>(texture, robot_scale);
+        delete_expired(enemy_line[line]);
         enemy_line[line].push_back(robot);
         current_enemy.push_back(std::move(robot));
         return *this;
@@ -129,7 +130,6 @@ public:
 
     TurnState turn = TurnState::Right;
     float robot_speed = 200;
-    const Res &res;
     float robot_scale = 5;
     std::vector<std::shared_ptr<Robot> > &current_enemy;
     std::vector<float> enemy_y;
@@ -143,12 +143,11 @@ private:
 
     void set_position_in_line(std::vector<std::weak_ptr<Robot> > &current_line, const int &line) {
         delete_expired(current_line);
-        float size_x = static_cast<float>(res.robot.getSize().x) * robot_scale;
         float x_position = border_x.x;
         for (auto &enemy: current_line) {
             if (const std::shared_ptr<Robot> lock_enemy = enemy.lock()) {
                 lock_enemy->setPosition({x_position, enemy_y[line]});
-                x_position += size_x + 10;
+                x_position += lock_enemy->getBounds().size.x + 10;
             }
         }
     }

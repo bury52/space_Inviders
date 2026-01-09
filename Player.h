@@ -31,7 +31,7 @@ public:
         } else if (event.scancode == sf::Keyboard::Scancode::D) {
             turn = TurnState::Right;
         } else if (event.scancode == sf::Keyboard::Scancode::W) {
-            shooter.shoot(TurnState::Up, sf::Vector2f(getBounds().getCenter().x,getBounds().position.y),bullet_speed);
+            shooter.shoot(TurnState::Up, sf::Vector2f(getBounds().getCenter().x,getBounds().position.y),bullet_speed,damage);
         }
     }
 
@@ -63,6 +63,7 @@ private:
     TurnState turn = TurnState::None;
     float player_speed = 400;
     float bullet_speed = 600;
+    int damage = 3;
     sf::Vector2f border_x;
     const Res& res;
     sf::Sprite sprite;

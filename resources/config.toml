@@ -11,20 +11,20 @@ texture = [
 
 [Entity]
 enemy = [
-    { name = "v1", texture = "Robot",health = 3 ,damage = 1 },
-    { name = "v2", texture = "Robot",health = 4 ,damage = 3 }
+    { name = "v1", texture = "Robot",health = 3 ,damage = 1, bulletSpeed = 400 },
+    { name = "v2", texture = "Robot",health = 4 ,damage = 3, bulletSpeed = 400 }
 ]
 
 player = [
-    { name = "level1", texture = "Spaceship",health = 3 ,damage = 3 }
+    { name = "level1", texture = "Spaceship",health = 3 ,damage = 3, bulletSpeed = 600 }
 ]
 
 [Layout]
 level = [
-    { name = "level_V1", layout = [
+    { name = "level_V1", player = "level1", layout = [
         ["v2","v2","v2","v2"],
         ["v1","v1","v1","v1"]
-    ]}
+    ],lines = [10,60,110,160,210,260,310,360] }
 ]
 
 game = [

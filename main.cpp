@@ -40,7 +40,13 @@ int main() {
     window.setKeyRepeatEnabled(false);
 
     std::optional<Game> game = std::nullopt;
-    StartMenu start_menu = StartMenu(game,game_template,window.getSize(),font);
+
+    const std::function<void(const Game_TOML &)> create_game = [&](const Game_TOML &game_toml) {
+        game.emplace(settings, game_toml, level_template, enemy_template, player_template, textures);
+    };
+
+    StartMenu start_menu = StartMenu(game, game_template, create_game, window.getSize(), font);
+
 
     // std::vector<std::shared_ptr<Robot> > current_enemy = {};
     // Enemy_Controller enemy_controller(current_enemy,
@@ -76,14 +82,13 @@ int main() {
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
-            }
-            else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-            if (game) {
-                game->onKeyPressed(*keyPressed);
-            }
+            } else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+                if (game) {
+                    game->onKeyPressed(*keyPressed);
+                }
                 //     if (!is_game_pause)
-            //     player.onKeyPressed(*keyPressed, buller_helper_player);
-            //
+                //     player.onKeyPressed(*keyPressed, buller_helper_player);
+                //
             }
             // else if (const auto *keyReleased = event->getIf<sf::Event::KeyReleased>()) {
             //     if (!is_game_pause)

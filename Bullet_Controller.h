@@ -23,8 +23,8 @@ public:
             : self(self), targets(targets...) {
         }
 
-        void shoot(const TurnState &turn, const sf::Vector2f &start_position, const float &bullet_speed) {
-            self->add_bullet(turn, start_position, bullet_speed, targets);
+        void shoot(const TurnState &turn, const sf::Vector2f &start_position, const float &bullet_speed, const int &damage) {
+            self->add_bullet(turn, start_position, bullet_speed, damage, targets);
         }
 
     private:
@@ -36,11 +36,12 @@ public:
         return Buller_Helper(this, targets...);
     }
 
-    void add_bullet(const TurnState &turn, const sf::Vector2f &start_position, const float &bullet_speed,
+    void add_bullet(const TurnState &turn, const sf::Vector2f &start_position, const float &bullet_speed, const int &damage,
                     std::tuple<std::optional<std::reference_wrapper<Target> >...> targets) {
         Bullet_Wraperr wraperr;
         wraperr.bullet.turn = turn;
         wraperr.bullet.bullet_speed = bullet_speed;
+        wraperr.bullet.damage = damage;
         wraperr.bullet.setPosition(start_position);
         wraperr.bullet.shape.setSize({5, 15});
         wraperr.targets = targets;

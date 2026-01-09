@@ -19,7 +19,7 @@ public:
     std::vector<Button<sf::Text> > games_button = {};
     Button<sf::Text> resume_button;
 
-    explicit StartMenu(std::optional<Game> &game, const std::vector<Game_TOML> &games, sf::Vector2u window_size,
+    explicit StartMenu(std::optional<Game> &game, const std::vector<Game_TOML> &games, const std::function<void(const Game_TOML &)> &create_game, sf::Vector2u window_size,
                        sf::Font &font)
         : game(game),
           games(games),
@@ -44,7 +44,7 @@ public:
         game_text.setPosition({50, 150});
 
         games_button = games | std::ranges::views::transform([&](const auto &e) {
-            Button button = Button(std::make_unique<sf::Text>(font, e.name), [&] { game = Game(); });
+            Button button = Button(std::make_unique<sf::Text>(font, e.name), [&] { create_game(e); });
             return button;
         }) | std::ranges::to<std::vector>();
 
