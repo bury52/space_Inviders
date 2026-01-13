@@ -40,7 +40,7 @@ inline Settings_TOML load_settings(const toml::table &tbl) {
 
 struct Texture_TOML {
     std::string name;
-    std::string texture;
+    std::string path;
 };
 
 inline std::vector<Texture_TOML> load_textures(const toml::table &tbl) {

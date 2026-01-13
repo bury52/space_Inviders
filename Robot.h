@@ -81,9 +81,8 @@ protected:
 
 class Enemy_Controller {
 public:
-    explicit Enemy_Controller(std::vector<std::shared_ptr<Robot> > &current_enemy, const std::vector<float> &enemy_y,
-                              const sf::Vector2f &border_x)
-        : current_enemy(current_enemy), enemy_y(enemy_y),
+    explicit Enemy_Controller(std::vector<std::shared_ptr<Robot> > &current_enemy,const sf::Vector2f &border_x)
+        : current_enemy(current_enemy),
           enemy_line(enemy_y.size(), std::vector<std::weak_ptr<Robot> >()), border_x(border_x) {
     }
 
@@ -132,7 +131,7 @@ public:
     float robot_speed = 200;
     float robot_scale = 5;
     std::vector<std::shared_ptr<Robot> > &current_enemy;
-    std::vector<float> enemy_y;
+    std::vector<float> enemy_y = {};
     std::vector<std::vector<std::weak_ptr<Robot> > > enemy_line;
     sf::Vector2f border_x;
 

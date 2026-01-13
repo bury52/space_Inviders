@@ -18,13 +18,9 @@ public:
          const std::vector<Entity_TOML> &player_toml,
          const std::vector<Texture_TOML> &texture_toml) : game_toml_(game_toml), level_toml_(level_toml),
                                                           enemy_toml_(enemy_toml), texture_toml_(texture_toml),
-                                                          player_toml_(player_toml) {
-        process_game();
+                                                          player_toml_(player_toml) , enemy_controller(current_enemy,{10, static_cast<float>(settings_toml.widthWindow) - 10}){
 
-        std::vector<std::shared_ptr<Robot> > current_enemy = {};
-        Enemy_Controller enemy_controller(current_enemy,
-                                          {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500},
-                                          {10, static_cast<float>(settings_toml.widthWindow) - 10});
+
 
         // enemy_controller
         //         .add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0)
@@ -47,6 +43,37 @@ public:
         // auto buller_helper_player = bullet_controller.get_helper(std::nullopt, current_enemy, walls);
     }
 
+    void process_level(const std::string &name) {
+
+    }
+
+    sf::Texture& getTexture(const std::string& name)
+    {
+        auto it = current_textures.find(name);
+        if (it != current_textures.end()) {
+            return it->second;
+        }
+
+        auto toml_it = std::ranges::find_if(texture_toml_,
+            [&](const Texture_TOML& e) { return e.name == name; });
+
+        if (toml_it == texture_toml_.end()) {
+            return error_texture;
+        }
+
+        auto [inserted_it, inserted] = current_textures.try_emplace(name);
+
+        sf::Texture& texture = inserted_it->second;
+
+        if (inserted) {
+            if (!texture.loadFromFile(toml_it->path)) {
+                current_textures.erase(inserted_it);
+                return error_texture;
+            }
+        }
+
+        return texture;
+    }
 
     void onKeyPressed(const sf::Event::KeyPressed &event) {
         if (event.scancode == sf::Keyboard::Scancode::Escape) {
@@ -54,6 +81,7 @@ public:
         }
     }
 
+    sf::Texture error_texture = sf::Texture(sf::Image({64,64},sf::Color::Red));
     bool is_pause = false;
     const Game_TOML &game_toml_;
     const std::vector<Level_TOML> &level_toml_;
@@ -61,22 +89,9 @@ public:
     const std::vector<Texture_TOML> &texture_toml_;
     const std::vector<Entity_TOML> &player_toml_;
 
+    std::vector<std::shared_ptr<Robot> > current_enemy = {};
+    Enemy_Controller enemy_controller;
     std::map<std::string, sf::Texture> current_textures;
-
-private:
-    void process_game() {
-        for (const auto &level: level_toml_ | std::ranges::views::filter([&](auto &e) {
-            return std::ranges::contains(game_toml_.levels, e.name);
-        })) {
-            process_level(level);
-        }
-    }
-
-    void process_level(const Level_TOML &level) {
-    };
-
-    void process_entity(const Entity_TOML &entity) {
-    }
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {

@@ -35,7 +35,8 @@ add_executable(space_invaders main.cpp
         Button.h
         TomlReader.h
         StartMenu.h
-        Game.h)
+        Game.h
+        Lazy.h)
 target_link_libraries(space_invaders PRIVATE SFML::Graphics SFML::Audio tomlplusplus::tomlplusplus)
 
 add_custom_command(TARGET space_invaders POST_BUILD
