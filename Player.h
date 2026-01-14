@@ -6,7 +6,6 @@
 #define SPACE_INVADERS_PLAYER_H
 #include "enum.h"
 #include "concepts.h"
-#include "structs.h"
 #include "SFML/Graphics/Drawable.hpp"
 #include "SFML/Graphics/Transformable.hpp"
 
@@ -22,7 +21,13 @@ public:
     };
 
     void collision(Bullet& collider) {
-        sprite.setColor(sf::Color::Red);
+        health -= collider.damage;
+        collider.damage = 0;
+        if (health <= 0) {
+            health = 0;
+            sprite.setColor(sf::Color::Red);
+        }
+
     }
 
     void onKeyPressed(const sf::Event::KeyPressed &event, Shooter auto& shooter) {
@@ -59,11 +64,17 @@ public:
         }
     }
 
+    [[nodiscard]] int getHealth() const {
+        return health;
+    }
+
 private:
     TurnState turn = TurnState::None;
     float player_speed = 400;
     float bullet_speed = 600;
     int damage = 3;
+    int health_max = 3;
+    int health = 3;
     sf::Vector2f border_x;
     sf::Sprite sprite;
 

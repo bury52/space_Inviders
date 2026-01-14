@@ -26,9 +26,7 @@ add_executable(space_invaders main.cpp
         util.h
         Player.h
         Robot.h
-        Robot.cpp
         concepts.h
-        structs.h
         Bullet.h
         Bullet_Controller.h
         Wall.h

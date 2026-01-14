@@ -79,44 +79,9 @@ int main() {
             game->update(restart);
             window.draw(*game);
         }
+        start_menu.update(restart);
         window.draw(start_menu);
         window.display();
 
-
-        //     if (!is_game_pause) {
-        //
-        //         player.update(restart);
-        //
-        //         enemy_controller.update(restart);
-        //
-        //         for (const auto &enemy: current_enemy) {
-        //             enemy->update(restart, player, buller_helper_robot);
-        //         }
-        //
-        //         bullet_controller.update(restart);
-        //
-        //         window.clear();
-        //
-        //         window.draw(player);
-        //
-        //         for (const auto &enemy: current_enemy) {
-        //             window.draw(*enemy);
-        //         }
-        //
-        //         window.draw(bullet_controller);
-        //
-        //         for (const auto &wall: walls) {
-        //             window.draw(wall);
-        //         }
-        //         window.display();
-        //
-        //     }else {
-        //         window.clear();
-        //
-        //         window.draw(start_game_button);
-        //
-        //         window.display();
-        //     }
-        //
     }
 };

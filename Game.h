@@ -27,9 +27,15 @@ public:
                                                                          static_cast<float>(settings_toml.widthWindow) -
                                                                          10
                                                                      }) {
-        if (game_toml.levels.empty())
+        if (game_toml_.levels.empty())
             return;
-        process_level(game_toml.levels[0]);
+        process_level(game_toml_.levels[level]);
+    }
+
+    void next_level() {
+        level++;
+        if (game_toml_.levels.size() > level)
+        process_level(game_toml_.levels[level]);
     }
 
     void update(const sf::Time &elapsed) {
@@ -60,6 +66,7 @@ public:
         }
     }
 
+    int level = 0;
     bool is_pause = false;
     const Game_TOML &game_toml_;
     const std::vector<Level_TOML> &level_toml_;

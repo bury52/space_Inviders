@@ -12,7 +12,6 @@
 #include "Bullet.h"
 #include "concepts.h"
 #include "enum.h"
-#include "structs.h"
 #include "util.h"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
