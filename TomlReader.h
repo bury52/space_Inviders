@@ -99,7 +99,7 @@ struct Level_TOML {
     std::string name;
     std::string player;
     std::vector<std::vector<std::string> > layout;
-    std::vector<int> lines;
+    std::vector<float> lines;
 };
 
 inline std::vector<Level_TOML> load_level(const toml::table &tbl) {
@@ -127,7 +127,7 @@ inline std::vector<Level_TOML> load_level(const toml::table &tbl) {
 
                 if (auto lines_array = el["lines"].as_array()) {
                     for (auto &&line: *lines_array) {
-                        if (std::optional<int> current = line.value<int>()) {
+                        if (std::optional<float> current = line.value<float>()) {
                             lvl.lines.push_back(*current);
                         }
                     }

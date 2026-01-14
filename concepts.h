@@ -26,9 +26,9 @@ template<typename T, typename R>
 concept CollisionObjectWith = CollisionObject<T> && CollisionWith<T, R>;
 
 template<typename T>
-concept Shooter = requires(T &obj, const TurnState &turn, const sf::Vector2f &start_position, const float &bullet_speed)
+concept Shooter = requires(T &obj, const TurnState &turn, const sf::Vector2f &start_position, const float &bullet_speed, const int &damage)
 {
-    { obj.shoot(turn, start_position, bullet_speed) } -> std::same_as<void>;
+    { obj.shoot(turn, start_position, bullet_speed, damage) } -> std::same_as<void>;
 };
 
 template<typename T>

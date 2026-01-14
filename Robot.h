@@ -82,8 +82,7 @@ protected:
 class Enemy_Controller {
 public:
     explicit Enemy_Controller(std::vector<std::shared_ptr<Robot> > &current_enemy,const sf::Vector2f &border_x)
-        : current_enemy(current_enemy),
-          enemy_line(enemy_y.size(), std::vector<std::weak_ptr<Robot> >()), border_x(border_x) {
+        : current_enemy(current_enemy), border_x(border_x){
     }
 
     void update(const sf::Time &elapsed) {
@@ -127,12 +126,16 @@ public:
         turn = TurnState::Right;
     }
 
+    void set_enemy_y(const std::vector<float> &lines) {
+        enemy_y = lines;
+        enemy_line = std::vector(enemy_y.size(), std::vector<std::weak_ptr<Robot> >());
+    }
+
     TurnState turn = TurnState::Right;
     float robot_speed = 200;
     float robot_scale = 5;
     std::vector<std::shared_ptr<Robot> > &current_enemy;
-    std::vector<float> enemy_y = {};
-    std::vector<std::vector<std::weak_ptr<Robot> > > enemy_line;
+    std::vector<std::vector<std::weak_ptr<Robot> > > enemy_line = {};
     sf::Vector2f border_x;
 
 private:
@@ -180,6 +183,8 @@ private:
             }
         }
     }
+
+    std::vector<float> enemy_y = {};
 };
 
 #endif //SPACE_INVADERS_ROBOT_H

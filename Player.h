@@ -12,8 +12,8 @@
 
 class Player : public sf::Drawable, public sf::Transformable {
 public:
-    explicit Player(const sf::Vector2f &border_x,const float& scale,const Res& res)
-        : border_x(border_x), res(res), sprite(res.player) {
+    explicit Player(const sf::Vector2f &border_x,const float& scale,const sf::Texture &texture)
+        : border_x(border_x), sprite(texture) {
         setScale({scale, scale});
     }
 
@@ -65,7 +65,6 @@ private:
     float bullet_speed = 600;
     int damage = 3;
     sf::Vector2f border_x;
-    const Res& res;
     sf::Sprite sprite;
 
 

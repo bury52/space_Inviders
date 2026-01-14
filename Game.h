@@ -7,6 +7,7 @@
 
 #include <SFML/Graphics/Drawable.hpp>
 
+#include "Lazy.h"
 #include "TomlReader.h"
 
 class Game : public sf::Drawable {
@@ -16,85 +17,119 @@ public:
          const std::vector<Level_TOML> &level_toml,
          const std::vector<Entity_TOML> &enemy_toml,
          const std::vector<Entity_TOML> &player_toml,
-         const std::vector<Texture_TOML> &texture_toml) : game_toml_(game_toml), level_toml_(level_toml),
-                                                          enemy_toml_(enemy_toml), texture_toml_(texture_toml),
-                                                          player_toml_(player_toml) , enemy_controller(current_enemy,{10, static_cast<float>(settings_toml.widthWindow) - 10}){
-
-
-
-        // enemy_controller
-        //         .add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0).add_enemy(0)
-        //         .add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1).add_enemy(1)
-        //         .add_enemy(2).add_enemy(2).add_enemy(2).add_enemy(2)
-        //         .set_start_position();
-
-        // std::vector<Wall> walls = {
-        //     {{50.0f, 800.0f}, {10, 10}, 5.0f},
-        //     {{350.0f, 800.0f}, {10, 10}, 5.0f},
-        //     {{650.0f, 800.0f}, {10, 10}, 5.0f},
-        //     {{950.0f, 800.0f}, {10, 10}, 5.0f},
-        // };
-        //
-        // Player player = Player({10, static_cast<float>(window.getSize().x) - 10}, 5, res);
-        // set_y_for_player(player, window.getSize().y);
-        //
-        // Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> >, std::vector<Wall> > bullet_controller = {};
-        // auto buller_helper_robot = bullet_controller.get_helper(player, std::nullopt, walls);
-        // auto buller_helper_player = bullet_controller.get_helper(std::nullopt, current_enemy, walls);
+         std::map<std::string, Lazy<Load_Texture> > &textures) : settings_toml_(settings_toml),
+                                                                 game_toml_(game_toml),
+                                                                 level_toml_(level_toml),
+                                                                 enemy_toml_(enemy_toml), textures_(textures),
+                                                                 player_toml_(player_toml),
+                                                                 enemy_controller(current_enemy, {
+                                                                         10,
+                                                                         static_cast<float>(settings_toml.widthWindow) -
+                                                                         10
+                                                                     }) {
+        if (game_toml.levels.empty())
+            return;
+        process_level(game_toml.levels[0]);
     }
 
-    void process_level(const std::string &name) {
+    void update(const sf::Time &elapsed) {
 
-    }
+        if (is_pause)
+            return;
 
-    sf::Texture& getTexture(const std::string& name)
-    {
-        auto it = current_textures.find(name);
-        if (it != current_textures.end()) {
-            return it->second;
+        player.update(elapsed);
+        enemy_controller.update(elapsed);
+        for (const auto &enemy: current_enemy) {
+            enemy->update(elapsed, player, buller_helper_robot);
         }
-
-        auto toml_it = std::ranges::find_if(texture_toml_,
-            [&](const Texture_TOML& e) { return e.name == name; });
-
-        if (toml_it == texture_toml_.end()) {
-            return error_texture;
-        }
-
-        auto [inserted_it, inserted] = current_textures.try_emplace(name);
-
-        sf::Texture& texture = inserted_it->second;
-
-        if (inserted) {
-            if (!texture.loadFromFile(toml_it->path)) {
-                current_textures.erase(inserted_it);
-                return error_texture;
-            }
-        }
-
-        return texture;
+        bullet_controller.update(elapsed);
     }
 
     void onKeyPressed(const sf::Event::KeyPressed &event) {
         if (event.scancode == sf::Keyboard::Scancode::Escape) {
             is_pause = true;
         }
+        if (!is_pause) {
+            player.onKeyPressed(event, buller_helper_player);
+        }
     }
 
-    sf::Texture error_texture = sf::Texture(sf::Image({64,64},sf::Color::Red));
+    void onKeyReleased(const sf::Event::KeyReleased &event) {
+        if (!is_pause) {
+            player.onKeyReleased(event);
+        }
+    }
+
     bool is_pause = false;
     const Game_TOML &game_toml_;
     const std::vector<Level_TOML> &level_toml_;
     const std::vector<Entity_TOML> &enemy_toml_;
-    const std::vector<Texture_TOML> &texture_toml_;
+    std::map<std::string, Lazy<Load_Texture> > &textures_;
     const std::vector<Entity_TOML> &player_toml_;
 
     std::vector<std::shared_ptr<Robot> > current_enemy = {};
     Enemy_Controller enemy_controller;
-    std::map<std::string, sf::Texture> current_textures;
+    const Settings_TOML &settings_toml_;
+    Player player = Player({0, 0}, 0, sf::Texture(sf::Image({8, 8}, sf::Color::Red)));
+    std::vector<Wall> walls = {};
+    using Bullet_Controller_type = Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> >, std::vector<Wall> >;
+    Bullet_Controller_type bullet_controller = {};
+    Bullet_Controller_type::Buller_Helper buller_helper_robot = bullet_controller.get_helper(
+        player, std::nullopt, walls);
+    Bullet_Controller_type::Buller_Helper buller_helper_player = bullet_controller.get_helper(
+        std::nullopt, current_enemy, walls);
+
+private:
+    void process_level(const std::string &level_name) {
+        auto level = std::ranges::find_if(level_toml_, [&](const auto &e) { return e.name == level_name; });
+        if (level == level_toml_.end()) {
+            return;
+        }
+        enemy_controller.set_enemy_y(level->lines);
+
+        auto player_t = std::ranges::find_if(player_toml_, [&](const auto &e) { return e.name == level->player; });
+        if (player_t == player_toml_.end()) {
+            return;
+        }
+
+        player = Player({10, static_cast<float>(settings_toml_.widthWindow) - 10}, 5,
+                        textures_.at(player_t->texture).get());
+        set_y_for_player(player, static_cast<float>(settings_toml_.heightWindow));
+
+
+        for (int i = 0; i < level->layout.size(); ++i) {
+            for (auto enemy_name: level->layout[i]) {
+                auto enemy = std::ranges::find_if(enemy_toml_, [&](const auto &e) { return e.name == enemy_name; });
+                if (enemy == enemy_toml_.end()) {
+                    continue;
+                }
+                enemy_controller.add_enemy(i, textures_.at(enemy->texture).get());
+            }
+        }
+        enemy_controller.set_start_position();
+    }
+
+    // std::vector<Wall> walls = {
+    //     {{50.0f, 800.0f}, {10, 10}, 5.0f},
+    //     {{350.0f, 800.0f}, {10, 10}, 5.0f},
+    //     {{650.0f, 800.0f}, {10, 10}, 5.0f},
+    //     {{950.0f, 800.0f}, {10, 10}, 5.0f},
+    // };
+
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
+        if (is_pause)
+            return;
+
+        for (const auto &enemy: current_enemy) {
+            target.draw(*enemy, states);
+        }
+        target.draw(player, states);
+        target.draw(bullet_controller, states);
+        for (const auto &wall: walls) {
+            target.draw(wall, states);
+        }
     };
 };
 
