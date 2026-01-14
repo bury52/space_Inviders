@@ -23,10 +23,10 @@ public:
                                                                  enemy_toml_(enemy_toml), textures_(textures),
                                                                  player_toml_(player_toml),
                                                                  enemy_controller(current_enemy, {
-                                                                         10,
-                                                                         static_cast<float>(settings_toml.widthWindow) -
-                                                                         10
-                                                                     }) {
+                                                                     10,
+                                                                     static_cast<float>(settings_toml.widthWindow) -
+                                                                     10
+                                                                 }) {
         if (game_toml_.levels.empty())
             return;
         process_level(game_toml_.levels[level]);
@@ -35,11 +35,10 @@ public:
     void next_level() {
         level++;
         if (game_toml_.levels.size() > level)
-        process_level(game_toml_.levels[level]);
+            process_level(game_toml_.levels[level]);
     }
 
     void update(const sf::Time &elapsed) {
-
         if (is_pause)
             return;
 
@@ -77,7 +76,7 @@ public:
     std::vector<std::shared_ptr<Robot> > current_enemy = {};
     Enemy_Controller enemy_controller;
     const Settings_TOML &settings_toml_;
-    Player player = Player({0, 0}, 0, sf::Texture(sf::Image({8, 8}, sf::Color::Red)));
+    Player player = Player({0, 0}, 0, sf::Texture(sf::Image({8, 8}, sf::Color::Red)), 0, 0, 0, 0, 0);
     std::vector<Wall> walls = {};
     using Bullet_Controller_type = Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> >, std::vector<Wall> >;
     Bullet_Controller_type bullet_controller = {};
@@ -100,9 +99,11 @@ private:
         }
 
         player = Player({10, static_cast<float>(settings_toml_.widthWindow) - 10}, 5,
-                        textures_.at(player_t->texture).get());
+                        textures_.at(player_t->texture).get(), player_t->health, player_t->damage, level->playerSpeed,
+                        player_t->bulletSpeed, player_t->bulletDelay);
         set_y_for_player(player, static_cast<float>(settings_toml_.heightWindow));
 
+        enemy_controller.robot_speed = level->enemySpeed;
 
         for (int i = 0; i < level->layout.size(); ++i) {
             for (auto enemy_name: level->layout[i]) {
@@ -110,7 +111,8 @@ private:
                 if (enemy == enemy_toml_.end()) {
                     continue;
                 }
-                enemy_controller.add_enemy(i, textures_.at(enemy->texture).get());
+                enemy_controller.add_enemy(i, textures_.at(enemy->texture).get(), enemy->health, enemy->damage,
+                                           enemy->bulletSpeed,enemy->bulletDelay);
             }
         }
         enemy_controller.set_start_position();

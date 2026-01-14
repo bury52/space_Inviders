@@ -13,7 +13,6 @@
 #include "concepts.h"
 #include "enum.h"
 #include "util.h"
-#include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Texture.hpp"
@@ -21,7 +20,8 @@
 
 class Robot : public sf::Drawable, public sf::Transformable {
 public:
-    explicit Robot(const sf::Texture &texture, const float &scale) : sprite(texture) {
+    explicit Robot(const sf::Texture &texture, const float &scale, const int &health, const int &damage,
+                   const float &bulletSpeed, const float &bulletDelay) : sprite(texture), health(health), damage(damage), bullet_speed(bulletSpeed), bullet_delay(sf::seconds(bulletDelay)) {
         setScale({scale, scale});
     };
 
@@ -29,11 +29,11 @@ public:
         return getTransform().transformRect(sprite.getGlobalBounds());
     }
 
-    void collision(Bullet& collider) {
+    void collision(Bullet &collider) {
         if (collider.damage <= health) {
             health -= collider.damage;
             collider.damage = 0;
-        }else {
+        } else {
             collider.damage -= health;
             health = 0;
         }
@@ -43,7 +43,7 @@ public:
         return health <= 0;
     }
 
-    void update(const sf::Time &elapsed, CollisionObject auto &player,Shooter auto &shooter) {
+    void update(const sf::Time &elapsed, CollisionObject auto &player, Shooter auto &shooter) {
         if (!can_shoot)
             return;
 
@@ -54,12 +54,14 @@ public:
         if (time_from_shot >= bullet_delay && getBounds().getCenter().x - 5 < player_bounds.getCenter().x &&
             getBounds().
             getCenter().x + 5 > player_bounds.getCenter().x) {
-            shooter.shoot(TurnState::Down,sf::Vector2f(getBounds().getCenter().x, getPosition().y),bullet_speed,damage);
+            shooter.shoot(TurnState::Down, sf::Vector2f(getBounds().getCenter().x, getPosition().y), bullet_speed,
+                          damage);
             time_from_shot = sf::seconds(0);
         }
     };
 
     bool can_shoot = false;
+
 private:
     sf::Time bullet_delay = sf::seconds(3);
     sf::Time time_from_shot = sf::seconds(0);
@@ -67,8 +69,6 @@ private:
     int health = 5;
     int damage = 3;
     sf::Sprite sprite;
-
-
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
@@ -80,8 +80,8 @@ protected:
 
 class Enemy_Controller {
 public:
-    explicit Enemy_Controller(std::vector<std::shared_ptr<Robot> > &current_enemy,const sf::Vector2f &border_x)
-        : current_enemy(current_enemy), border_x(border_x){
+    explicit Enemy_Controller(std::vector<std::shared_ptr<Robot> > &current_enemy, const sf::Vector2f &border_x)
+        : current_enemy(current_enemy), border_x(border_x) {
     }
 
     void update(const sf::Time &elapsed) {
@@ -110,8 +110,9 @@ public:
         update_can_shoot();
     };
 
-    Enemy_Controller &add_enemy(const int &line,const sf::Texture &texture) {
-        auto robot = std::make_shared<Robot>(texture, robot_scale);
+    Enemy_Controller &add_enemy(const int &line, const sf::Texture &texture, const int &health, const int &damage,
+                   const float &bulletSpeed, const float &bulletDelay) {
+        auto robot = std::make_shared<Robot>(texture, robot_scale, health, damage, bulletSpeed, bulletDelay);
         delete_expired(enemy_line[line]);
         enemy_line[line].push_back(robot);
         current_enemy.push_back(std::move(robot));

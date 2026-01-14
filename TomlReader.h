@@ -62,7 +62,8 @@ struct Entity_TOML {
     std::string texture;
     int health;
     int damage;
-    int bulletSpeed;
+    float bulletSpeed;
+    float bulletDelay;
 };
 
 inline std::vector<Entity_TOML> load_enemy(const toml::table &tbl) {
@@ -72,7 +73,7 @@ inline std::vector<Entity_TOML> load_enemy(const toml::table &tbl) {
         entity_array->for_each([&](auto &&el) {
             if constexpr (toml::is_table<decltype(el)>) {
                 entity.emplace_back(el["name"].value_or(""), el["texture"].value_or(""), el["health"].value_or(0),
-                                    el["damage"].value_or(0), el["bulletSpeed"].value_or(400));
+                                    el["damage"].value_or(0), el["bulletSpeed"].value_or(400.0),el["bulletDelay"].value_or(3.0));
             }
         });
     }
@@ -87,7 +88,7 @@ inline std::vector<Entity_TOML> load_player(const toml::table &tbl) {
         entity_array->for_each([&](auto &&el) {
             if constexpr (toml::is_table<decltype(el)>) {
                 entity.emplace_back(el["name"].value_or(""), el["texture"].value_or(""), el["health"].value_or(0),
-                                    el["damage"].value_or(0), el["bulletSpeed"].value_or(600));
+                                    el["damage"].value_or(0), el["bulletSpeed"].value_or(600.0),el["bulletDelay"].value_or(1.0));
             }
         });
     }
@@ -98,6 +99,8 @@ inline std::vector<Entity_TOML> load_player(const toml::table &tbl) {
 struct Level_TOML {
     std::string name;
     std::string player;
+    float playerSpeed;
+    float enemySpeed;
     std::vector<std::vector<std::string> > layout;
     std::vector<float> lines;
 };
@@ -111,6 +114,8 @@ inline std::vector<Level_TOML> load_level(const toml::table &tbl) {
                 Level_TOML lvl;
                 lvl.name = el["name"].value_or("");
                 lvl.player = el["player"].value_or("");
+                lvl.playerSpeed = el["playerSpeed"].value_or(400.0);
+                lvl.enemySpeed = el["enemySpeed"].value_or(400.0);
 
                 if (auto layout_array = el["layout"].as_array()) {
                     for (auto &&row: *layout_array) {
