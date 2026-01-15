@@ -16,8 +16,8 @@ public:
     sf::Font &font;
     sf::Text main_text;
     sf::Text game_text;
-    std::vector<Button<sf::Text> > games_button = {};
-    Button<sf::Text> resume_button;
+    std::vector<Button<UIButton> > games_button = {};
+    Button<UIButton> resume_button;
 
     // --- in game ---
 
@@ -39,9 +39,9 @@ public:
           game_text(font, "games:"),
           resume_button(
               [&] {
-                  auto text_ = std::make_unique<sf::Text>(font, "resume");
+                  auto text_ = std::make_unique<UIButton>(sf::Text(font, "resume"));
                   text_->setPosition({200, 150});
-                  text_->setFillColor(sf::Color::Red);
+                  text_->text.setFillColor(sf::Color::Red);
                   return std::move(text_);
               }(), [&] { game->is_pause = false; }
           ),
@@ -57,8 +57,8 @@ public:
         game_text.setFillColor(sf::Color::Green);
         game_text.setPosition({50, 150});
 
-        games_button = games | std::ranges::views::transform([&](const auto &e) {
-            Button button = Button(std::make_unique<sf::Text>(font, e.name), [&] { create_game(e); });
+        games_button = games | std::views::transform([&](const auto &e) {
+            Button button = Button(std::make_unique<UIButton>(sf::Text(font, e.name)), [&] { create_game(e); });
             return button;
         }) | std::ranges::to<std::vector>();
 

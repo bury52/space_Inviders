@@ -29,7 +29,8 @@ public:
                                                                          10,
                                                                          static_cast<float>(settings_toml.widthWindow) -
                                                                          10
-                                                                     }) {
+                                                                     }),
+                                                                 bullet_controller(settings_toml) {
         if (game_toml_.levels.empty())
             return;
         process_level(game_toml_.levels[level]);
@@ -84,7 +85,7 @@ public:
     std::vector<Wall> walls = {};
     const std::vector<Wall_TOML> &wall_toml_;
     using Bullet_Controller_type = Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> >, std::vector<Wall> >;
-    Bullet_Controller_type bullet_controller = {};
+    Bullet_Controller_type bullet_controller;
     Bullet_Controller_type::Buller_Helper buller_helper_robot = bullet_controller.get_helper(
         player, std::nullopt, walls);
     Bullet_Controller_type::Buller_Helper buller_helper_player = bullet_controller.get_helper(

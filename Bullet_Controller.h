@@ -8,6 +8,7 @@
 #include "Bullet.h"
 #include "concepts.h"
 #include "enum.h"
+#include "TomlReader.h"
 #include "SFML/Graphics/Drawable.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
@@ -16,6 +17,9 @@
 template<typename... Target>
 class Bullet_Controller : public sf::Drawable {
 public:
+    explicit Bullet_Controller(const Settings_TOML &settings_toml) : settings_toml_(settings_toml) {
+    }
+
     class Buller_Helper {
     public:
         explicit Buller_Helper(Bullet_Controller<Target...> *const self,
@@ -58,9 +62,9 @@ public:
         }
 
         erase_if(bullets, [&](Bullet_Wraperr &wraperr) {
-            // TODO dostarczyć rozmiat okna zamiast 1000
+            // -110 because menu;
             if ((wraperr.bullet.turn == TurnState::Up && wraperr.bullet.getBounds().position.y < 0) || (
-                    wraperr.bullet.turn == TurnState::Down && wraperr.bullet.getBounds().position.y > 1000))
+                    wraperr.bullet.turn == TurnState::Down && wraperr.bullet.getBounds().position.y > settings_toml_.heightWindow - 110))
                 return true;
 
             bool should_erase = false;
@@ -141,6 +145,7 @@ private:
     };
 
     std::vector<Bullet_Wraperr> bullets = {};
+    const Settings_TOML &settings_toml_;
 };
 
 #endif //SPACE_INVADERS_BULLET_CONTROLLER_H
