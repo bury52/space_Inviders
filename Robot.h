@@ -20,8 +20,13 @@
 
 class Robot : public sf::Drawable, public sf::Transformable {
 public:
-    explicit Robot(const sf::Texture &texture, const float &scale, const int &health, const int &damage,
-                   const float &bulletSpeed, const float &bulletDelay) : sprite(texture), health(health), damage(damage), bullet_speed(bulletSpeed), bullet_delay(sf::seconds(bulletDelay)) {
+    explicit Robot(const sf::Texture &texture, const sf::Texture &texture2, const float &gif_time, const float &scale,
+                   const int &health, const int &damage,
+                   const float &bulletSpeed, const float &bulletDelay) : sprite(texture), health(health),
+                                                                         damage(damage), bullet_speed(bulletSpeed),
+                                                                         bullet_delay(sf::seconds(bulletDelay)),
+                                                                         texture_(texture), texture2_(texture2),
+                                                                         gif_time_(sf::seconds(gif_time)) {
         setScale({scale, scale});
     };
 
@@ -44,6 +49,19 @@ public:
     }
 
     void update(const sf::Time &elapsed, CollisionObject auto &player, Shooter auto &shooter) {
+        current_gif_time_ += elapsed;
+        if (current_gif_time_ >= gif_time_) {
+            if (current_texture_switch) {
+                sprite.setTexture(texture_);
+                current_texture_switch = false;
+            } else {
+                sprite.setTexture(texture2_);
+                current_texture_switch = true;
+            }
+            current_gif_time_ = sf::seconds(0);
+        }
+
+
         if (!can_shoot)
             return;
 
@@ -61,8 +79,13 @@ public:
     };
 
     bool can_shoot = false;
+    const sf::Texture &texture_;
+    const sf::Texture &texture2_;
+    const sf::Time gif_time_;
 
 private:
+    sf::Time current_gif_time_ = sf::seconds(0);
+    bool current_texture_switch = false;
     sf::Time bullet_delay = sf::seconds(3);
     sf::Time time_from_shot = sf::seconds(0);
     float bullet_speed = 400;
@@ -110,9 +133,9 @@ public:
         update_can_shoot();
     };
 
-    Enemy_Controller &add_enemy(const int &line, const sf::Texture &texture, const int &health, const int &damage,
-                   const float &bulletSpeed, const float &bulletDelay) {
-        auto robot = std::make_shared<Robot>(texture, robot_scale, health, damage, bulletSpeed, bulletDelay);
+    Enemy_Controller &add_enemy(const int &line,const sf::Texture &texture, const sf::Texture &texture2, const float &gif_time, const int &health, const int &damage,
+                                const float &bulletSpeed, const float &bulletDelay) {
+        auto robot = std::make_shared<Robot>(texture,texture2,gif_time, robot_scale, health, damage, bulletSpeed, bulletDelay);
         delete_expired(enemy_line[line]);
         enemy_line[line].push_back(robot);
         current_enemy.push_back(std::move(robot));

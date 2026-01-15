@@ -118,22 +118,31 @@ private:
                 if (enemy == enemy_toml_.end()) {
                     continue;
                 }
-                enemy_controller.add_enemy(i, textures_.at(enemy->texture).get(), enemy->health, enemy->damage,
+                auto pos = enemy->texture.find(';');
+                if (pos == std::string::npos) {
+                    continue;
+                }
+                enemy_controller.add_enemy(i,
+                                           textures_.at(enemy->texture.substr(0, pos)).get(),
+                                           textures_.at(enemy->texture.substr(pos + 1)).get(), 1, enemy->health,
+                                           enemy->damage,
                                            enemy->bulletSpeed, enemy->bulletDelay);
             }
         }
         enemy_controller.set_start_position();
 
-        auto wall = std::ranges::find_if(wall_toml_,[&](const auto &e){ return e.name == level->wall; });
+        auto wall = std::ranges::find_if(wall_toml_, [&](const auto &e) { return e.name == level->wall; });
         if (wall == wall_toml_.end()) {
             return;
         }
 
+        walls.clear();
         const float wall_size_x = wall->x * 5;
         const float wall_position_x = (settings_toml_.widthWindow - wall_size_x * wall->count) / (wall->count + 1);
         const float wall_position_y = settings_toml_.heightWindow - wall->height;
         for (int i = 1; i <= wall->count; ++i) {
-            walls.emplace_back(sf::Vector2f{wall_position_x*i + wall_size_x*(i-1),wall_position_y}, sf::Vector2i{wall->x,wall->y}, 5, wall->cut);
+            walls.emplace_back(sf::Vector2f{wall_position_x * i + wall_size_x * (i - 1), wall_position_y},
+                               sf::Vector2i{wall->x, wall->y}, 5, wall->cut);
         }
     }
 
