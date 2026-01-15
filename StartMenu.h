@@ -124,6 +124,7 @@ public:
 
                 if (game->current_enemy.size() == 0) {
                     delay -= elapsed;
+                    next_level_text.setString(game->end_title);
                     if (delay <= sf::seconds(0)) {
                         if (game->game_toml_.levels.size() > game->level + 1) {
                             game->next_level();

@@ -25,7 +25,7 @@ wall = [
 ]
 
 level = [
-    { name = "level_V1", player = "level1", playerSpeed = 400, enemySpeed = 200, wall = "wall1", layout = [
+    { name = "level_V1", end = "next_level", player = "level1", playerSpeed = 400, enemySpeed = 200, wall = "wall1", layout = [
         ["v2","v2","v2","v2"],
         ["v1","v1","v1","v1"]
     ],lines = [10,60,110,160,210,260,310,360] }

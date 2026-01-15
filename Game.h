@@ -69,6 +69,7 @@ public:
     }
 
     int level = 0;
+    std::string end_title = "";
     bool is_pause = false;
     const Game_TOML &game_toml_;
     const std::vector<Level_TOML> &level_toml_;
@@ -96,6 +97,8 @@ private:
             return;
         }
         enemy_controller.set_enemy_y(level->lines);
+
+        end_title = level->end;
 
         auto player_t = std::ranges::find_if(player_toml_, [&](const auto &e) { return e.name == level->player; });
         if (player_t == player_toml_.end()) {

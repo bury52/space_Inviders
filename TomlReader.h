@@ -126,6 +126,7 @@ inline std::vector<Wall_TOML> load_wall(const toml::table &tbl) {
 struct Level_TOML {
     std::string name;
     std::string player;
+    std::string end;
     float playerSpeed;
     float enemySpeed;
     std::vector<std::vector<std::string> > layout;
@@ -142,6 +143,7 @@ inline std::vector<Level_TOML> load_level(const toml::table &tbl) {
                 Level_TOML lvl;
                 lvl.name = el["name"].value_or("");
                 lvl.player = el["player"].value_or("");
+                lvl.end = el["end"].value_or("");
                 lvl.wall = el["wall"].value_or("");
                 lvl.playerSpeed = el["playerSpeed"].value_or(400.0);
                 lvl.enemySpeed = el["enemySpeed"].value_or(400.0);
