@@ -28,6 +28,7 @@ public:
     const sf::Time delay_default = sf::seconds(3);
     sf::Time delay = delay_default;
     sf::Text next_level_text;
+    sf::Vector2u window_size_;
 
     explicit StartMenu(std::optional<Game> &game, const std::vector<Game_TOML> &games,
                        const std::function<void(const Game_TOML &)> &create_game, sf::Vector2u window_size,
@@ -47,7 +48,7 @@ public:
           ),
           health_text(font, "health:", 40),
           game_over_text(font, "game over", 150),
-          next_level_text(font, "next level", 150) {
+          next_level_text(font, "next level", 150), window_size_(window_size) {
         // main_text
         main_text.setFillColor(sf::Color::Green);
         main_text.setOrigin(main_text.getLocalBounds().getCenter());
@@ -125,6 +126,8 @@ public:
                 if (game->current_enemy.size() == 0) {
                     delay -= elapsed;
                     next_level_text.setString(game->end_title);
+                    next_level_text.setOrigin(next_level_text.getLocalBounds().getCenter());
+                    next_level_text.setPosition({static_cast<float>(window_size_.x / 2), static_cast<float>(window_size_.y / 2)});
                     if (delay <= sf::seconds(0)) {
                         if (game->game_toml_.levels.size() > game->level + 1) {
                             game->next_level();
