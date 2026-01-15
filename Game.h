@@ -130,9 +130,8 @@ private:
         const float wall_position_x = (settings_toml_.widthWindow - wall_size_x * wall->count) / (wall->count + 1);
         const float wall_position_y = settings_toml_.heightWindow - wall->height;
         for (int i = 1; i <= wall->count; ++i) {
-            walls.emplace_back(sf::Vector2f{wall_position_x*i + wall_size_x*(i-1),wall_position_y}, sf::Vector2i{wall->x,wall->y}, 5);
+            walls.emplace_back(sf::Vector2f{wall_position_x*i + wall_size_x*(i-1),wall_position_y}, sf::Vector2i{wall->x,wall->y}, 5, wall->cut);
         }
-bool t;
     }
 
 protected:

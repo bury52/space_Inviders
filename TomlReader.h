@@ -73,7 +73,8 @@ inline std::vector<Entity_TOML> load_enemy(const toml::table &tbl) {
         entity_array->for_each([&](auto &&el) {
             if constexpr (toml::is_table<decltype(el)>) {
                 entity.emplace_back(el["name"].value_or(""), el["texture"].value_or(""), el["health"].value_or(0),
-                                    el["damage"].value_or(0), el["bulletSpeed"].value_or(400.0),el["bulletDelay"].value_or(3.0));
+                                    el["damage"].value_or(0), el["bulletSpeed"].value_or(400.0),
+                                    el["bulletDelay"].value_or(3.0));
             }
         });
     }
@@ -88,7 +89,8 @@ inline std::vector<Entity_TOML> load_player(const toml::table &tbl) {
         entity_array->for_each([&](auto &&el) {
             if constexpr (toml::is_table<decltype(el)>) {
                 entity.emplace_back(el["name"].value_or(""), el["texture"].value_or(""), el["health"].value_or(0),
-                                    el["damage"].value_or(0), el["bulletSpeed"].value_or(600.0),el["bulletDelay"].value_or(1.0));
+                                    el["damage"].value_or(0), el["bulletSpeed"].value_or(600.0),
+                                    el["bulletDelay"].value_or(1.0));
             }
         });
     }
@@ -102,6 +104,7 @@ struct Wall_TOML {
     int x;
     int y;
     int height;
+    int cut;
 };
 
 inline std::vector<Wall_TOML> load_wall(const toml::table &tbl) {
@@ -110,7 +113,8 @@ inline std::vector<Wall_TOML> load_wall(const toml::table &tbl) {
     if (auto wall_array = tbl["Layout"]["wall"].as_array()) {
         wall_array->for_each([&](auto &&el) {
             if constexpr (toml::is_table<decltype(el)>) {
-                entity.emplace_back(el["name"].value_or(""), el["count"].value_or(0),el["x"].value_or(0),el["y"].value_or(0),el["height"].value_or(0));
+                entity.emplace_back(el["name"].value_or(""), el["count"].value_or(0), el["x"].value_or(0),
+                                    el["y"].value_or(0), el["height"].value_or(0), el["cut"].value_or(4));
             }
         });
     }

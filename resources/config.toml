@@ -21,7 +21,7 @@ player = [
 
 [Layout]
 wall = [
-    { name = "wall1", count = 4 ,x = 15, y = 10, height = 250 }
+    { name = "wall1", count = 4 ,x = 15, y = 10, height = 250, cut = 5}
 ]
 
 level = [

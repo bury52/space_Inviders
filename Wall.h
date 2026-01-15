@@ -13,17 +13,23 @@
 
 class Wall : public sf::Drawable {
 public:
-    Wall(const sf::Vector2f &position, const sf::Vector2i &segments, const float &scale)
+    Wall(const sf::Vector2f &position, const sf::Vector2i &segments, const float &scale, const int& cut)
         : bounds(position, static_cast<sf::Vector2f>(segments) * scale) {
         const sf::Vector2f scaleVector(scale, scale);
 
         for (int i = 0; i < segments.y; ++i) {
             const float segment_y = position.y + static_cast<float>(i) * scale;
+            int segments_x_cut = segments.x / cut - (i);
             for (int j = 0; j < segments.x; ++j) {
+                if (j < segments_x_cut || (segments.x-j) <= segments_x_cut)
+                    continue;
                 const float segment_x = position.x + static_cast<float>(j) * scale;
                 wall_segment.emplace_back(scaleVector).setPosition({segment_x, segment_y});
             }
         }
+
+
+
     }
 
     [[nodiscard]] sf::FloatRect getBounds() const {
