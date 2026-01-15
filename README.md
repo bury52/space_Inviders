@@ -13,7 +13,7 @@ Jaki kod jest każdy widzi. Więc opisze ciekawe mechanizmy, jakie użyłem w ko
 > ponieważ to dynamiczna cześć języka i nie można jej skompilować bez wiedzy, w jaki sposób chcemy jej użyć.
 
 > [!IMPORTANT]
-> w pliku [CMakeLists.txt](CMakeLists.txt) są informacje
+> w pliku [CMakeLists.txt](CMakeLists.txt#34) są informacje
 > 
 
 #### 
