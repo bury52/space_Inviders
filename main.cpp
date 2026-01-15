@@ -61,14 +61,14 @@ int main() {
                 if (game) {
                     game->onKeyPressed(*keyPressed);
                 }
-            }
-            else if (const auto *keyReleased = event->getIf<sf::Event::KeyReleased>()) {
+            } else if (const auto *keyReleased = event->getIf<sf::Event::KeyReleased>()) {
                 if (game) {
                     game->onKeyReleased(*keyReleased);
                 }
-            }
-            else if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>()) {
+            } else if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>()) {
                 start_menu.onMouseButtonPressed(*mouseButtonPressed);
+            } else if (const auto *mouseWheelScrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
+                start_menu.onMouseWheelScrolled(*mouseWheelScrolled);
             }
         }
 
@@ -82,6 +82,5 @@ int main() {
         start_menu.update(restart);
         window.draw(start_menu);
         window.display();
-
     }
 };

@@ -95,6 +95,14 @@ public:
         }
     }
 
+    void onMouseWheelScrolled(const sf::Event::MouseWheelScrolled &event) {
+        if (!game || game->is_pause) {
+            for (auto& button : games_button) {
+                button.move({event.delta * 10,0});
+            }
+        }
+    }
+
     void update(const sf::Time &elapsed) {
         if (game) {
             if (game->player.getHealth() <= 0) {
