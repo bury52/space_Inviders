@@ -96,6 +96,29 @@ inline std::vector<Entity_TOML> load_player(const toml::table &tbl) {
     return entity;
 }
 
+struct Wall_TOML {
+    std::string name;
+    int count;
+    int x;
+    int y;
+    int height;
+};
+
+inline std::vector<Wall_TOML> load_wall(const toml::table &tbl) {
+    std::vector<Wall_TOML> entity;
+
+    if (auto wall_array = tbl["Layout"]["wall"].as_array()) {
+        wall_array->for_each([&](auto &&el) {
+            if constexpr (toml::is_table<decltype(el)>) {
+                entity.emplace_back(el["name"].value_or(""), el["count"].value_or(0),el["x"].value_or(0),el["y"].value_or(0),el["height"].value_or(0));
+            }
+        });
+    }
+
+    return entity;
+}
+
+
 struct Level_TOML {
     std::string name;
     std::string player;
@@ -103,6 +126,7 @@ struct Level_TOML {
     float enemySpeed;
     std::vector<std::vector<std::string> > layout;
     std::vector<float> lines;
+    std::string wall;
 };
 
 inline std::vector<Level_TOML> load_level(const toml::table &tbl) {
@@ -114,6 +138,7 @@ inline std::vector<Level_TOML> load_level(const toml::table &tbl) {
                 Level_TOML lvl;
                 lvl.name = el["name"].value_or("");
                 lvl.player = el["player"].value_or("");
+                lvl.wall = el["wall"].value_or("");
                 lvl.playerSpeed = el["playerSpeed"].value_or(400.0);
                 lvl.enemySpeed = el["enemySpeed"].value_or(400.0);
 

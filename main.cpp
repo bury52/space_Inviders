@@ -23,10 +23,11 @@ int main() {
         load_textures,
         load_enemy,
         load_player,
+        load_wall,
         load_level,
         load_game);
     if (!toml) return 1;
-    auto &[settings,textures,enemy_template,player_template,level_template,game_template] = toml.value();
+    auto &[settings,textures,enemy_template,player_template,wall_template,level_template,game_template] = toml.value();
 
     sf::Font font;
     if (!font.openFromFile("resources/" + settings.font)) {
@@ -47,7 +48,7 @@ int main() {
     }
 
     const std::function<void(const Game_TOML &)> create_game = [&](const Game_TOML &game_toml) {
-        game.emplace(settings, game_toml, level_template, enemy_template, player_template, map_texture);
+        game.emplace(settings, game_toml, level_template, wall_template, enemy_template, player_template, map_texture);
     };
 
     StartMenu start_menu = StartMenu(game, game_template, create_game, window.getSize(), font);

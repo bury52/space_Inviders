@@ -15,18 +15,21 @@ public:
     Game(const Settings_TOML &settings_toml,
          const Game_TOML &game_toml,
          const std::vector<Level_TOML> &level_toml,
+         const std::vector<Wall_TOML> &wall_toml,
          const std::vector<Entity_TOML> &enemy_toml,
          const std::vector<Entity_TOML> &player_toml,
          std::map<std::string, Lazy<Load_Texture> > &textures) : settings_toml_(settings_toml),
                                                                  game_toml_(game_toml),
                                                                  level_toml_(level_toml),
-                                                                 enemy_toml_(enemy_toml), textures_(textures),
+                                                                 wall_toml_(wall_toml),
+                                                                 enemy_toml_(enemy_toml),
+                                                                 textures_(textures),
                                                                  player_toml_(player_toml),
                                                                  enemy_controller(current_enemy, {
-                                                                     10,
-                                                                     static_cast<float>(settings_toml.widthWindow) -
-                                                                     10
-                                                                 }) {
+                                                                         10,
+                                                                         static_cast<float>(settings_toml.widthWindow) -
+                                                                         10
+                                                                     }) {
         if (game_toml_.levels.empty())
             return;
         process_level(game_toml_.levels[level]);
@@ -78,6 +81,7 @@ public:
     const Settings_TOML &settings_toml_;
     Player player = Player({0, 0}, 0, sf::Texture(sf::Image({8, 8}, sf::Color::Red)), 0, 0, 0, 0, 0);
     std::vector<Wall> walls = {};
+    const std::vector<Wall_TOML> &wall_toml_;
     using Bullet_Controller_type = Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> >, std::vector<Wall> >;
     Bullet_Controller_type bullet_controller = {};
     Bullet_Controller_type::Buller_Helper buller_helper_robot = bullet_controller.get_helper(
@@ -112,19 +116,24 @@ private:
                     continue;
                 }
                 enemy_controller.add_enemy(i, textures_.at(enemy->texture).get(), enemy->health, enemy->damage,
-                                           enemy->bulletSpeed,enemy->bulletDelay);
+                                           enemy->bulletSpeed, enemy->bulletDelay);
             }
         }
         enemy_controller.set_start_position();
+
+        auto wall = std::ranges::find_if(wall_toml_,[&](const auto &e){ return e.name == level->wall; });
+        if (wall == wall_toml_.end()) {
+            return;
+        }
+
+        const float wall_size_x = wall->x * 5;
+        const float wall_position_x = (settings_toml_.widthWindow - wall_size_x * wall->count) / (wall->count + 1);
+        const float wall_position_y = settings_toml_.heightWindow - wall->height;
+        for (int i = 1; i <= wall->count; ++i) {
+            walls.emplace_back(sf::Vector2f{wall_position_x*i + wall_size_x*(i-1),wall_position_y}, sf::Vector2i{wall->x,wall->y}, 5);
+        }
+bool t;
     }
-
-    // std::vector<Wall> walls = {
-    //     {{50.0f, 800.0f}, {10, 10}, 5.0f},
-    //     {{350.0f, 800.0f}, {10, 10}, 5.0f},
-    //     {{650.0f, 800.0f}, {10, 10}, 5.0f},
-    //     {{950.0f, 800.0f}, {10, 10}, 5.0f},
-    // };
-
 
 protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
