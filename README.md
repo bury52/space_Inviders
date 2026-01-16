@@ -27,6 +27,9 @@ Ponieważ w pliku [Player.h](Player.h) chciałem includować [Robot.h](Robot.h) 
 
 [^1]:[template](https://en.cppreference.com/w/cpp/language/templates.html)
 [^2]:[Concepts](https://en.cppreference.com/w/cpp/concepts.html)
-[^3]:header guard występuje na początku pliki i dba, żeby plik nie wkleił sie dwa razy. `#ifndef SPACE_INVADERS_ROBOT_H
-#define SPACE_INVADERS_ROBOT_H`
+[^3]:header guard występuje na początku pliki i dba, żeby plik nie wkleił sie dwa razy. 
+```c++
+#ifndef SPACE_INVADERS_ROBOT_H
+#define SPACE_INVADERS_ROBOT_H
+```
 
