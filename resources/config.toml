@@ -40,7 +40,7 @@ level = [
     ],lines = [10,60,110,160,210,260,310,360] },
 
     { name = "level_V2", end = "you won", player = "level1", playerSpeed = 400, enemySpeed = 300, wall = "wall2", layout = [
-        ["V3","v2","v2","v3"]
+        ["v3","v2","v2","v3"]
     ],lines = [10,60,110,160,210,260,310,360] },
 
     { name = "level_pyramid", end = "-->>", player = "level2", playerSpeed = 600, enemySpeed = 500, wall = "pyramid", layout = [
