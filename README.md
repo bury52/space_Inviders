@@ -163,6 +163,7 @@ lista poziomów
 - layout = siatka przeciwników. nazwy z konfigu.
 - lines = lista wysokość, po których poruszają się przeciwnicy.
 ```toml
+[Layout]
 level = [
 { name = "level_V1", end = "next_level", player = "level1", playerSpeed = 400, enemySpeed = 200, wall = "wall1", layout = [
     ["v2","v2","v2","v2"],
@@ -174,6 +175,7 @@ lista gier
 - name = nazwa używana do konfiguracji.
 - levels = lista leveli. nazwy z konfigu.
 ```toml
+[Layout]
 game = [
     { name = "mini", levels = [
         "level_V1",
