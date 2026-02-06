@@ -1,12 +1,194 @@
 # Space Invaders
 ##### Opis: Projekt na algorytmikę i struktury danych.
-- [ ] Czy Osoba Prowadząca Zajęcia pozwoliła użyć kodu da zaliczeń innych przedmiotów
+projekt to gra space_invaders oparta na pliku konfiguracyjnym.
+## zdjęcei z gry
+menu funkcje:
+- przemieszczanie przycisków scrollem
+- wybór gier
+![img.png](img/img.png)
+gra:
+- esc - wstrzymanie gry 
+![img_1.png](img/img_1.png)
+![img_2.png](img/img_2.png)
+![img_3.png](img/img_3.png)
+## Plik Konfiguracyjny
+```toml
+[Settings]
+widthWindow = 1000
+heightWindow = 1000
+font = "Jersey10-Regular.ttf"
 
-> [!WARNING]
-> Nie odpowiadam za bule głowy spowodowane nazewnictwem zmiennych, ortografią oraz interpunkcją.
+[Resources]
+texture = [
+    { name = "Robot", path = "robak.png" },
+    { name = "Robot2", path = "robak2.png" },
+    { name = "Alien1_1", path = "kosmita1_1.png" },
+    { name = "Alien1_2", path = "kosmita1_2.png" },
+    { name = "Alien2_1", path = "kosmita2_1.png" },
+    { name = "Alien2_2", path = "kosmita2_2.png" },
+    { name = "Spaceship", path = "statek.png" }
+]
 
-Jaki kod jest każdy widzi. Więc opisze ciekawe mechanizmy, jakie użyłem w kodzie.<br/>
+[Entity]
+enemy = [
+    { name = "v1", texture = "Robot;Robot2",health = 3 ,damage = 3, bulletSpeed = 400, bulletDelay = 3},
+    { name = "v2", texture = "Alien1_1;Alien1_2",health = 8 ,damage = 5, bulletSpeed = 300, bulletDelay = 3},
+    { name = "v3", texture = "Alien2_1;Alien2_2",health = 4 ,damage = 5, bulletSpeed = 600, bulletDelay = 1}
+]
 
+player = [
+    { name = "level1", texture = "Spaceship",health = 10 ,damage = 3, bulletSpeed = 600, bulletDelay = 0.2},
+    { name = "level2", texture = "Spaceship",health = 5 ,damage = 3, bulletSpeed = 500, bulletDelay = 0.1}
+]
+
+[Layout]
+wall = [
+    { name = "wall1", count = 4 ,x = 15, y = 10, height = 250, cut = 5},
+    { name = "wall2", count = 2 ,x = 20, y = 10, height = 250, cut = 3},
+    { name = "pyramid", count = 1 ,x = 180, y = 60, height = 500, cut = 2}
+]
+
+level = [
+    { name = "level_V1", end = "next_level", player = "level1", playerSpeed = 400, enemySpeed = 200, wall = "wall1", layout = [
+        ["v2","v2","v2","v2"],
+        ["v1","v1","v1","v1"]
+    ],lines = [10,60,110,160,210,260,310,360] },
+
+    { name = "level_V2", end = "you won", player = "level1", playerSpeed = 400, enemySpeed = 300, wall = "wall2", layout = [
+        ["v3","v2","v2","v3"]
+    ],lines = [10,60,110,160,210,260,310,360] },
+
+    { name = "level_pyramid", end = "-->>", player = "level2", playerSpeed = 600, enemySpeed = 500, wall = "pyramid", layout = [
+        ["v3","v3","v3","v3"]
+    ],lines = [10,60,110,160,210,260,310,360] },
+
+    { name = "level_full", end = "-->>", player = "level1", playerSpeed = 400, enemySpeed = 200, wall = "wall1", layout = [
+        ["v3","v3","v3","v3","v3","v3","v3","v3","v3"],
+        ["v2","v2","v2","v2","v2","v2","v2","v2","v2"],
+        ["v1","v2","v3","v1","v1","v1","v3","v2","v1"],
+        ["v1","v3","v3","v1","v2","v1","v3","v3","v1"],
+        ["v1","v1","v1","v1","v1","v1","v1","v1","v1"],
+    ],lines = [10,60,110,160,210,260,310,360] }
+]
+
+game = [
+    { name = "mini", levels = [
+        "level_V1",
+        "level_V2",
+    ]},
+    { name = "pyramid", levels = [
+        "level_pyramid",
+    ]},
+    { name = "full", levels = [
+        "level_full",
+    ]}
+]
+```
+### opis konfiguracji 
+
+Ustawienie rozmiaru okna oraz fontu
+```toml
+[Settings]
+widthWindow = 1000
+heightWindow = 1000
+font = "Jersey10-Regular.ttf"
+```
+
+lista texture
+- name = nazwa używana do konfiguracji.
+- path = ścieżka do pliku. (pliki są ładowane, dopiero jak są potrzebne)
+```toml
+[Resources]
+texture = [
+    { name = "Robot", path = "robak.png" },
+    { name = "Robot2", path = "robak2.png" },
+    { name = "Alien1_1", path = "kosmita1_1.png" },
+    { name = "Alien1_2", path = "kosmita1_2.png" },
+    { name = "Alien2_1", path = "kosmita2_1.png" },
+    { name = "Alien2_2", path = "kosmita2_2.png" },
+    { name = "Spaceship", path = "statek.png" }
+]
+```
+lista przeciwników 
+- name = nazwa używana do konfiguracji.
+- texture = dwie nazwy tekstur oddzielone `;`
+- health = zdrowie 
+- damage = zadawane obradzenia
+- bulletSpeed = Prędkość pocisku 
+- bulletDelay = czas do wystrzelenia kolejnego pocisku. (pocisk zostaje wystrzelony dopiero, jeśli przeciwnik znajduje się nad graczem)
+```toml
+[Entity]
+enemy = [
+    { name = "v1", texture = "Robot;Robot2",health = 3 ,damage = 3, bulletSpeed = 400, bulletDelay = 3},
+    { name = "v2", texture = "Alien1_1;Alien1_2",health = 8 ,damage = 5, bulletSpeed = 300, bulletDelay = 3},
+    { name = "v3", texture = "Alien2_1;Alien2_2",health = 4 ,damage = 5, bulletSpeed = 600, bulletDelay = 1}
+]
+```
+lista graczy
+- name = nazwa używana do konfiguracji.
+- texture = nazwa tekstury
+- health = zdrowie
+- damage = zadawane obradzenia
+- bulletSpeed = Prędkość pocisku
+- bulletDelay = czas do wystrzelenia kolejnego pocisku. (pocisk zostaje wystrzelony dopiero, jeśli przeciwnik znajduje się nad graczem)
+```toml
+[Entity]
+player = [
+    { name = "level1", texture = "Spaceship",health = 10 ,damage = 3, bulletSpeed = 600, bulletDelay = 0.2},
+    { name = "level2", texture = "Spaceship",health = 5 ,damage = 3, bulletSpeed = 500, bulletDelay = 0.1}
+]
+```
+
+lista ścian
+- name = nazwa używana do konfiguracji.
+- count = ilość ścian
+- x/y = rozmiar
+- height = wysokość, na której jest ściana 
+- cut = kształt ściany. im mniejsza, tym bardziej ścięta.
+```toml
+[Layout]
+wall = [
+    { name = "wall1", count = 4 ,x = 15, y = 10, height = 250, cut = 5},
+    { name = "wall2", count = 2 ,x = 20, y = 10, height = 250, cut = 3},
+    { name = "pyramid", count = 1 ,x = 180, y = 60, height = 500, cut = 2}
+]
+```
+lista poziomów 
+- name = nazwa używana do konfiguracji.
+- end = napis pojawiający się po przejściu levelu 
+- player = nazwa gracza z konfigu.
+- playerSpeed = prędkość poruszania się gracza.
+- enemySpeed = prędkość poruszania się przeciwników.
+- wall = nazwa ściany z konfigu.
+- layout = siatka przeciwników. nazwy z konfigu.
+- lines = lista wysokość, po których poruszają się przeciwnicy.
+```toml
+level = [
+{ name = "level_V1", end = "next_level", player = "level1", playerSpeed = 400, enemySpeed = 200, wall = "wall1", layout = [
+    ["v2","v2","v2","v2"],
+    ["v1","v1","v1","v1"]
+    ],lines = [10,60,110,160,210,260,310,360] }
+]
+```
+lista gier
+- name = nazwa używana do konfiguracji.
+- levels = lista leveli. nazwy z konfigu.
+```toml
+game = [
+    { name = "mini", levels = [
+        "level_V1",
+        "level_V2",
+    ]},
+    { name = "pyramid", levels = [
+        "level_pyramid",
+    ]},
+    { name = "full", levels = [
+        "level_full",
+    ]}
+]
+```
+## opiś niektórych fragmentów kodu
+są również komentarze w kodzie.
 > [!IMPORTANT]
 > Pierwsze co trzeba wyjaśnić to, czemu wszystkie pliki są `.h`. Jest tak dlatego,
 > że w większość plików używam `template`[^1] a funkcje szablonowe muszą być w plikach nagłówkowych,
