@@ -189,7 +189,7 @@ game = [
     ]}
 ]
 ```
-## opiś niektórych fragmentów kodu
+## opis niektórych fragmentów kodu
 są również komentarze w kodzie.
 > [!IMPORTANT]
 > Pierwsze co trzeba wyjaśnić to, czemu wszystkie pliki są `.h`. Jest tak dlatego,
