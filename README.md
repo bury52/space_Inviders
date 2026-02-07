@@ -203,6 +203,21 @@ są również komentarze w kodzie.
 >    - [`https://github.com/SFML/SFML.git`](https://www.sfml-dev.org/).
 >    - [`https://github.com/marzer/tomlplusplus.git`](https://marzer.github.io/tomlplusplus/).
 
+## Pliki
+- `Bullet.h` - obiekt pocisku (odpowiada za rysowanie)
+- `Bullet_Controller.h` - odpowiada za poruszanie się pocisków oraz mechanikę wystrzału i kolizji
+- `Button.h` - odpowiada za rysowanie i klikanie przycisków.
+- `concepts.h` - przechowuje wszystkie koncepty
+- `enum.h` - przechowuje wszystkie enumy.
+- `Game.h` - ustawianie gry rozmieszczanie ścian tworzenie pomocniczych obiektów do strzelania. ładowanie nowych leveli.
+- `Lazy.h` - odpowiada za leniwe ładowanie plików. może też leniwie wykonywać dowolną rzecz.
+- `Player.h` - odpowiada za rysowanie gracza oraz za poruszane się i strzelanie.
+- `Robot.h` - odpowiada za ryzowanie przeciwników. tworzenie ich w odpowiednich odstępach i poruszanie nimi. wskazuje, który przeciwnik może strzelać.
+- `StartMenu.h` - menu startu. głównie rysowanie przycisków.
+- `TomlReader.h` - ładowanie pliku konfiguracyjnego.
+- `util.h` - pomocnicze funkcje.
+- `Wall.h` - rysowanie ścian i destrukcja ścian.
+
 ## Template[^1] + variadic template[^2] + Fold expressions[^3]
 Przy pomocy wariadycznych szablonów można stworzyć funkcje, która przyjmuje cokolwiek np. [TomlReader.h](TomlReader.h)
 ```c++
