@@ -113,6 +113,7 @@ public:
                     delay = delay_default;
                 }
             } else {
+                // pokazywanie aktualnego życia
                 if (game->player.getHealth() != old_health_player) {
                     std::string h = " []";
                     std::string current = "health:";

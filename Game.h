@@ -112,7 +112,7 @@ private:
         set_y_for_player(player, static_cast<float>(settings_toml_.heightWindow));
 
         enemy_controller.robot_speed = level->enemySpeed;
-
+        // tworzenie przeciwników
         for (int i = 0; i < level->layout.size(); ++i) {
             for (auto enemy_name: level->layout[i]) {
                 auto enemy = std::ranges::find_if(enemy_toml_, [&](const auto &e) { return e.name == enemy_name; });
@@ -136,7 +136,7 @@ private:
         if (wall == wall_toml_.end()) {
             return;
         }
-
+        // tworzenie ścian
         walls.clear();
         const float wall_size_x = wall->x * 5;
         const float wall_position_x = (settings_toml_.widthWindow - wall_size_x * wall->count) / (wall->count + 1);

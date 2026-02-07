@@ -16,7 +16,7 @@ public:
     Wall(const sf::Vector2f &position, const sf::Vector2i &segments, const float &scale, const int& cut)
         : bounds(position, static_cast<sf::Vector2f>(segments) * scale) {
         const sf::Vector2f scaleVector(scale, scale);
-
+        // ścinanie rogów ściany.
         for (int i = 0; i < segments.y; ++i) {
             const float segment_y = position.y + static_cast<float>(i) * scale;
             int segments_x_cut = segments.x / cut - (i);
@@ -35,7 +35,7 @@ public:
     [[nodiscard]] sf::FloatRect getBounds() const {
         return bounds;
     };
-
+    // kolizja z pociskiem i destrukcja
     void collision(Bullet &collider) {
         const float half_damage =  static_cast<float>(collider.damage) / 2.0f;
         auto damage_collider_position = collider.getBounds().getCenter() - sf::Vector2f{

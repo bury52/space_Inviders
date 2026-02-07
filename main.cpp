@@ -17,6 +17,7 @@
 #include "TomlReader.h"
 
 int main() {
+    // ładowanie konfiguracji z tomla
     auto toml = create_form_toml(
         "resources/config.toml",
         load_settings,
@@ -34,7 +35,7 @@ int main() {
         return 2;
     }
     font.setSmooth(false);
-
+    // tworzenie okna
     sf::RenderWindow window(sf::VideoMode({settings.widthWindow, settings.heightWindow}), "Space Invaders",
                             sf::Style::Close);
     window.setPosition({10, 10});
@@ -46,13 +47,13 @@ int main() {
     for (const auto &texture: textures) {
         map_texture.emplace(texture.name, Lazy(Load_Texture(texture.path)));
     }
-
+    // funkcja do tworzenia gry.
     const std::function<void(const Game_TOML &)> create_game = [&](const Game_TOML &game_toml) {
         game.emplace(settings, game_toml, level_template, wall_template, enemy_template, player_template, map_texture);
     };
 
     StartMenu start_menu = StartMenu(game, game_template, create_game, window.getSize(), font);
-
+    // główna pętla programu.
     sf::Clock clock;
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {

@@ -54,6 +54,7 @@ concept UIElement =
             { obj.getGlobalBounds() } -> std::same_as<sf::FloatRect>;
         }) && std::derived_from<T,sf::Drawable>;
 
+// wydobywa Bounds z UIElement.
 template<UIElement T>
 sf::FloatRect UIElement_getBounds(T& obj) {
     if constexpr (CollisionObject<T>){

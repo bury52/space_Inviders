@@ -10,7 +10,7 @@
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/Transformable.hpp"
 #include "SFML/Window/Event.hpp"
-
+// element UI przycisk
 template<UIElement T>
 class Button : public sf::Drawable, public sf::Transformable {
 public:

@@ -9,6 +9,7 @@
 #include <toml++/toml.hpp>
 #include "SFML/Graphics/Texture.hpp"
 
+// ładowanie obiektów z pliku toml.
 template<std::invocable<toml::table>... Fs>
 std::optional<std::tuple<std::invoke_result_t<Fs, toml::table>...> > create_form_toml(
     const std::string &filename, Fs... fs) {

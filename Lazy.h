@@ -11,7 +11,7 @@
 #include "SFML/Graphics/Image.hpp"
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/Graphics/Texture.hpp"
-
+// ładowanie tekstur.
 class Load_Texture {
     std::string path;
 
@@ -27,7 +27,7 @@ public:
         return texture;
     }
 };
-
+// leniwe wywoływanie
 template<typename F>
     requires std::invocable<F>
 class Lazy {

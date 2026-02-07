@@ -21,7 +21,7 @@ public:
     sf::FloatRect getBounds() const {
         return getTransform().transformRect(sprite.getGlobalBounds());
     };
-
+    // kolizja z pociskiem
     void collision(Bullet &collider) {
         health -= collider.damage;
         collider.damage = 0;
@@ -30,7 +30,7 @@ public:
             sprite.setColor(sf::Color::Red);
         }
     }
-
+    // straowanie
     void onKeyPressed(const sf::Event::KeyPressed &event, Shooter auto &shooter) {
         if (event.scancode == sf::Keyboard::Scancode::A) {
             turn = TurnState::Left;

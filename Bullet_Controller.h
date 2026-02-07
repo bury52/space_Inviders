@@ -19,7 +19,7 @@ class Bullet_Controller : public sf::Drawable {
 public:
     explicit Bullet_Controller(const Settings_TOML &settings_toml) : settings_toml_(settings_toml) {
     }
-
+    // Buller_Helper upraszcza strzelanie w plikach Player.h i Robot.h. dostarcz prostą funkcję shoot a przechowuje cele, które mogą wejść w kolizje z pociskiem
     class Buller_Helper {
     public:
         explicit Buller_Helper(Bullet_Controller<Target...> *const self,
@@ -60,7 +60,7 @@ public:
                 wraperr.bullet.move({0, elapsed.asSeconds() * wraperr.bullet.bullet_speed});
             }
         }
-
+        // sprawdzanie kolizji
         erase_if(bullets, [&](Bullet_Wraperr &wraperr) {
             // -110 because menu;
             if ((wraperr.bullet.turn == TurnState::Up && wraperr.bullet.getBounds().position.y < 0) || (
@@ -89,6 +89,7 @@ protected:
     };
 
 private:
+    // logika kolizji
     template<typename T>
     static bool if_collided(T &target, Bullet &bullet) {
         return false;

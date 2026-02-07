@@ -33,7 +33,7 @@ public:
     sf::FloatRect getBounds() const {
         return getTransform().transformRect(sprite.getGlobalBounds());
     }
-
+    //  kolizja z pociskiem
     void collision(Bullet &collider) {
         if (collider.damage <= health) {
             health -= collider.damage;
@@ -49,6 +49,7 @@ public:
     }
 
     void update(const sf::Time &elapsed, CollisionObject auto &player, Shooter auto &shooter) {
+        // animacja
         current_gif_time_ += elapsed;
         if (current_gif_time_ >= gif_time_) {
             if (current_texture_switch) {
@@ -60,8 +61,7 @@ public:
             }
             current_gif_time_ = sf::seconds(0);
         }
-
-
+        // strzelanie
         if (!can_shoot)
             return;
 
@@ -106,7 +106,7 @@ public:
     explicit Enemy_Controller(std::vector<std::shared_ptr<Robot> > &current_enemy, const sf::Vector2f &border_x)
         : current_enemy(current_enemy), border_x(border_x) {
     }
-
+    // poruszanie się wszystkich przeciwników.
     void update(const sf::Time &elapsed) {
         if (turn == TurnState::Left) {
             for (const auto &robot: current_enemy) {
@@ -132,7 +132,7 @@ public:
         }
         update_can_shoot();
     };
-
+    // dodawanei przeciwnika
     Enemy_Controller &add_enemy(const int &line,const sf::Texture &texture, const sf::Texture &texture2, const float &gif_time, const int &health, const int &damage,
                                 const float &bulletSpeed, const float &bulletDelay) {
         auto robot = std::make_shared<Robot>(texture,texture2,gif_time, robot_scale, health, damage, bulletSpeed, bulletDelay);
@@ -141,7 +141,7 @@ public:
         current_enemy.push_back(std::move(robot));
         return *this;
     }
-
+    // ustawianie pozycji przeciwniką
     void set_start_position() {
         for (int i = 0; i < enemy_line.size(); ++i) {
             set_position_in_line(enemy_line[i], i);
@@ -165,7 +165,7 @@ private:
     static void delete_expired(std::vector<std::weak_ptr<Robot> > &current_line) {
         erase_if(current_line, [](const std::weak_ptr<Robot> &enemy) { return enemy.expired(); });
     }
-
+    // ustawianie pozycji w liniach
     void set_position_in_line(std::vector<std::weak_ptr<Robot> > &current_line, const int &line) {
         delete_expired(current_line);
         float x_position = border_x.x;
@@ -190,7 +190,7 @@ private:
             }
         }
     }
-
+    // sprawdzane, czy przeciwnik moze strzelać.
     void update_can_shoot() {
         std::vector<float> occupied_lines;
         for (const auto &line: enemy_line | std::ranges::views::reverse) {
