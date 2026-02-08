@@ -23,7 +23,7 @@ std::optional<std::tuple<std::invoke_result_t<Fs, toml::table>...> > create_form
 }
 
 // --- loaders ---
-
+// struktury i funkcje ładujące wszystkie ustawienia z tomla.
 struct Settings_TOML {
     unsigned int widthWindow;
     unsigned int heightWindow;

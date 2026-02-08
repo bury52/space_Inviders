@@ -8,7 +8,7 @@
 #include "concepts.h"
 #include "SFML/Graphics/Drawable.hpp"
 #include "SFML/Graphics/Transformable.hpp"
-
+// gracz
 class Player : public sf::Drawable, public sf::Transformable {
 public:
     explicit Player(const sf::Vector2f &border_x, const float &scale, const sf::Texture &texture, const int &health,
@@ -17,11 +17,11 @@ public:
           bullet_speed(bulletSpeed), bullet_delay(sf::seconds(bulletDelay)) {
         setScale({scale, scale});
     }
-
+    // spełnienie konceptu CollisionObject
     sf::FloatRect getBounds() const {
         return getTransform().transformRect(sprite.getGlobalBounds());
     };
-    // kolizja z pociskiem
+    // spełnienie konceptu CollisionWith
     void collision(Bullet &collider) {
         health -= collider.damage;
         collider.damage = 0;
@@ -30,7 +30,7 @@ public:
             sprite.setColor(sf::Color::Red);
         }
     }
-    // straowanie
+    // sterowanie graczem, funkcja przyjmuje referencje do obiektu shooter, który spełnia koncept Shooter
     void onKeyPressed(const sf::Event::KeyPressed &event, Shooter auto &shooter) {
         if (event.scancode == sf::Keyboard::Scancode::A) {
             turn = TurnState::Left;
@@ -44,14 +44,14 @@ public:
             }
         }
     }
-
+    // gracz przestaję się ruszać po puszczeniu przycisku
     void onKeyReleased(const sf::Event::KeyReleased &event) {
         if ((event.scancode == sf::Keyboard::Scancode::A && turn == TurnState::Left) ||
             (event.scancode == sf::Keyboard::Scancode::D && turn == TurnState::Right)) {
             turn = TurnState::None;
         }
     }
-
+    // aktualizacja stanu gracza
     void update(const sf::Time &elapsed) {
         time_from_shot += elapsed;
         if (turn == TurnState::Left) {
@@ -69,7 +69,7 @@ public:
             }
         }
     }
-
+    // getter
     [[nodiscard]] int getHealth() const {
         return health;
     }
@@ -87,6 +87,7 @@ private:
     sf::Sprite sprite;
 
 protected:
+    // funkcja rysowania z sf::Drawable
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         states.transform *= getTransform();
         target.draw(sprite, states);

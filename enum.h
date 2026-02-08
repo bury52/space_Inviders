@@ -5,6 +5,7 @@
 #ifndef SPACE_INVADERS_ENUM_H
 #define SPACE_INVADERS_ENUM_H
 
+// enum kierunek
 enum class TurnState {
     None = 0,
     Up,

@@ -9,7 +9,7 @@
 
 #include "Lazy.h"
 #include "TomlReader.h"
-
+// gra
 class Game : public sf::Drawable {
 public:
     Game(const Settings_TOML &settings_toml,
@@ -35,13 +35,13 @@ public:
             return;
         process_level(game_toml_.levels[level]);
     }
-
+    // następny level
     void next_level() {
         level++;
         if (game_toml_.levels.size() > level)
             process_level(game_toml_.levels[level]);
     }
-
+    // aktualizacja stanu
     void update(const sf::Time &elapsed) {
         if (is_pause)
             return;
@@ -53,7 +53,7 @@ public:
         }
         bullet_controller.update(elapsed);
     }
-
+    // klikanie przycisku
     void onKeyPressed(const sf::Event::KeyPressed &event) {
         if (event.scancode == sf::Keyboard::Scancode::Escape) {
             is_pause = true;
@@ -62,7 +62,7 @@ public:
             player.onKeyPressed(event, buller_helper_player);
         }
     }
-
+    // od klikniecie przycisku
     void onKeyReleased(const sf::Event::KeyReleased &event) {
         if (!is_pause) {
             player.onKeyReleased(event);
@@ -86,12 +86,13 @@ public:
     const std::vector<Wall_TOML> &wall_toml_;
     using Bullet_Controller_type = Bullet_Controller<Player, std::vector<std::shared_ptr<Robot> >, std::vector<Wall> >;
     Bullet_Controller_type bullet_controller;
-    Bullet_Controller_type::Buller_Helper buller_helper_robot = bullet_controller.get_helper(
+    Bullet_Controller_type::Bullet_Helper buller_helper_robot = bullet_controller.get_helper(
         player, std::nullopt, walls);
-    Bullet_Controller_type::Buller_Helper buller_helper_player = bullet_controller.get_helper(
+    Bullet_Controller_type::Bullet_Helper buller_helper_player = bullet_controller.get_helper(
         std::nullopt, current_enemy, walls);
 
 private:
+    // załadowanie, przygotowanie, odpalenie levelu.
     void process_level(const std::string &level_name) {
         auto level = std::ranges::find_if(level_toml_, [&](const auto &e) { return e.name == level_name; });
         if (level == level_toml_.end()) {
@@ -148,6 +149,7 @@ private:
     }
 
 protected:
+    // funkcja rysowania z sf::Drawable
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         if (is_pause)
             return;

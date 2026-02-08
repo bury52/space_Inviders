@@ -9,35 +9,35 @@
 #include "type_traits"
 #include "enum.h"
 #include <memory>
-
+// obiekt posiada funkcje getBounds() -> sf::FloatRect
 template<typename T>
 concept CollisionObject = requires(const T &obj)
 {
     { obj.getBounds() } -> std::same_as<sf::FloatRect>;
 };
-
+// obiekt posiada funkcje getBounds(R)
 template<typename T, typename R>
 concept CollisionWith = requires(T &obj, R &collider)
 {
     { obj.collision(collider) } -> std::same_as<void>;
 };
-
+// obiekt spełnia koncepty CollisionObject i CollisionWith.
 template<typename T, typename R>
 concept CollisionObjectWith = CollisionObject<T> && CollisionWith<T, R>;
-
+// obiekt posiada funkcje shoot
 template<typename T>
 concept Shooter = requires(T &obj, const TurnState &turn, const sf::Vector2f &start_position, const float &bullet_speed, const int &damage)
 {
     { obj.shoot(turn, start_position, bullet_speed, damage) } -> std::same_as<void>;
 };
-
+// obiekt jest pointerem lub smart pointerem
 template<typename T>
 concept SmartOrRawPointer =
         std::is_pointer_v<T> ||
         (requires { typename T::element_type; } &&
          (std::same_as<T, std::unique_ptr<typename T::element_type> > ||
           std::same_as<T, std::shared_ptr<typename T::element_type> >));
-
+// obiekt posiada funkcje shouldRemove() -> bool
 template<typename T>
 concept Removable = requires(const T &obj)
 {
@@ -45,7 +45,7 @@ concept Removable = requires(const T &obj)
 };
 
 // --- UI ---
-
+// element UI
 template<typename T>
 concept UIElement =
         (CollisionObject<T> ||

@@ -13,20 +13,20 @@
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/System/Time.hpp"
-
+// klasa kontrolujaca pociski.
 template<typename... Target>
 class Bullet_Controller : public sf::Drawable {
 public:
     explicit Bullet_Controller(const Settings_TOML &settings_toml) : settings_toml_(settings_toml) {
     }
-    // Buller_Helper upraszcza strzelanie w plikach Player.h i Robot.h. dostarcz prostą funkcję shoot a przechowuje cele, które mogą wejść w kolizje z pociskiem
-    class Buller_Helper {
+    // Bullet_Helper upraszcza strzelanie w plikach Player.h i Robot.h. dostarcz prostą funkcję shoot a przechowuje cele, które mogą wejść w kolizje z pociskiem
+    class Bullet_Helper {
     public:
-        explicit Buller_Helper(Bullet_Controller<Target...> *const self,
+        explicit Bullet_Helper(Bullet_Controller<Target...> *const self,
                                std::optional<std::reference_wrapper<Target> >... targets)
             : self(self), targets(targets...) {
         }
-
+        // strzelanie
         void shoot(const TurnState &turn, const sf::Vector2f &start_position, const float &bullet_speed, const int &damage) {
             self->add_bullet(turn, start_position, bullet_speed, damage, targets);
         }
@@ -35,11 +35,11 @@ public:
         Bullet_Controller<Target...> *const self;
         std::tuple<std::optional<std::reference_wrapper<Target> >...> targets;
     };
-
-    Buller_Helper get_helper(std::optional<std::reference_wrapper<Target> >... targets) {
-        return Buller_Helper(this, targets...);
+    // tworzenie Bullet_Helper
+    Bullet_Helper get_helper(std::optional<std::reference_wrapper<Target> >... targets) {
+        return Bullet_Helper(this, targets...);
     }
-
+    // dodawanie pocisku
     void add_bullet(const TurnState &turn, const sf::Vector2f &start_position, const float &bullet_speed, const int &damage,
                     std::tuple<std::optional<std::reference_wrapper<Target> >...> targets) {
         Bullet_Wraperr wraperr;
@@ -51,7 +51,7 @@ public:
         wraperr.targets = targets;
         bullets.push_back(std::move(wraperr));
     }
-
+    // aktualizacja stanu pocisków
     void update(const sf::Time &elapsed) {
         for (Bullet_Wraperr &wraperr: bullets) {
             if (wraperr.bullet.turn == TurnState::Up) {
@@ -73,6 +73,7 @@ public:
                 should_erase = (([&]<typename T>(std::optional<T> &target_) {
                     if (!target_.has_value())
                         return false;
+                    // Sprawdzanie kolizji już na pojedynczym obiekcie.
                     return if_collided(target_.value().get(), wraperr.bullet);
                 }(targets_)) || ...);
             }, wraperr.targets);
@@ -82,6 +83,7 @@ public:
     }
 
 protected:
+    // funkcja rysowania z sf::Drawable
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         for (const Bullet_Wraperr &wraperr: bullets) {
             target.draw(wraperr.bullet, states);
@@ -94,7 +96,7 @@ private:
     static bool if_collided(T &target, Bullet &bullet) {
         return false;
     };
-
+    // Logika kolizji. Przeciążenie ,obiekt musi spełniać koncept CollisionObjectWith<Bullet>.
     template<CollisionObjectWith<Bullet> T>
     static bool if_collided(T &target, Bullet &bullet) {
         sf::FloatRect target_bounds = target.getBounds();
@@ -104,11 +106,12 @@ private:
         }
         return false;
     };
-
+    // Logika kolizji. Przeciążenie, obiekt musi być wektorem.
     template<typename T>
     static bool if_collided(std::vector<T> &target, Bullet &bullet) {
         for (auto it = target.begin(); it != target.end(); ++it) {
             if (if_collided(*it, bullet)) {
+                // próba usunięcia
                 if (tryRemove(*it)) {
                     target.erase(it);
                 }
@@ -117,29 +120,29 @@ private:
         }
         return false;
     };
-
+    // Logika kolizji. Przeciążenie ,obiekt musi spełniać koncept SmartOrRawPointer.
     template<SmartOrRawPointer Ptr>
     static bool if_collided(Ptr &ptr, Bullet &bullet) {
         if (!ptr) return false;
         return if_collided(*ptr, bullet);
     }
-
+    // czy element mozna usunąć
     template<typename T>
     static bool tryRemove(const T &element) {
         return false;
     };
-
+    // Przeciążenie, z Removable
     template<Removable T>
     static bool tryRemove(const T &element) {
         return element.shouldRemove();
     };
-
+    // Przeciążenie, z SmartOrRawPointer
     template<SmartOrRawPointer Ptr>
     static bool tryRemove(const Ptr &ptr) {
         if (!ptr) return true;
         return tryRemove(*ptr);
     }
-
+    // struktura przechowująca pocisk i cele.
     struct Bullet_Wraperr {
         std::tuple<std::optional<std::reference_wrapper<Target> >...> targets = {};
         Bullet bullet;

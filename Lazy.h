@@ -18,7 +18,7 @@ class Load_Texture {
 public:
     explicit Load_Texture(const std::string &p) : path(p) {
     }
-
+    // operator wywołania, który ładuje teksture.
     sf::Texture operator()() const {
         sf::Texture texture;
         if (!texture.loadFromFile("resources/" +path)) {
@@ -46,7 +46,7 @@ public:
 
     explicit Lazy(F &&fn) : function(std::move(fn)) {
     }
-
+    // getter. Za pierwszym razem wywołuje F function{};
     T &get() {
         if (!instance) {
             instance = std::invoke(function);

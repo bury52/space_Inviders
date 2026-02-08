@@ -8,7 +8,7 @@
 #include <ranges>
 #include "TomlReader.h"
 #include "SFML/Graphics/Drawable.hpp"
-
+// menu gry
 class StartMenu : public sf::Drawable {
 public:
     std::optional<Game> &game;
@@ -29,7 +29,7 @@ public:
     sf::Time delay = delay_default;
     sf::Text next_level_text;
     sf::Vector2u window_size_;
-
+    // konstruktor
     explicit StartMenu(std::optional<Game> &game, const std::vector<Game_TOML> &games,
                        const std::function<void(const Game_TOML &)> &create_game, sf::Vector2u window_size,
                        sf::Font &font)
@@ -87,6 +87,7 @@ public:
         next_level_text.setPosition({static_cast<float>(window_size.x / 2), static_cast<float>(window_size.y / 2)});
     }
 
+    // klikanie przycisku
     void onMouseButtonPressed(const sf::Event::MouseButtonPressed &event) {
         for (auto &button: games_button) {
             button.onMouseButtonPressed(event);
@@ -95,7 +96,7 @@ public:
             resume_button.onMouseButtonPressed(event);
         }
     }
-
+    // scrollowanie
     void onMouseWheelScrolled(const sf::Event::MouseWheelScrolled &event) {
         if (!game || game->is_pause) {
             for (auto& button : games_button) {
@@ -103,7 +104,7 @@ public:
             }
         }
     }
-
+    // Aktualizacja stanu, pobieranie informacji z gry np. zdrowia
     void update(const sf::Time &elapsed) {
         if (game) {
             if (game->player.getHealth() <= 0) {
@@ -143,6 +144,7 @@ public:
     }
 
 protected:
+    // funkcja rysowania z sf::Drawable
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         if (game) {
             if (!game->is_pause) {

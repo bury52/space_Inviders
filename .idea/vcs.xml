@@ -15,11 +15,18 @@
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/sfml-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/tomlplusplus-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/vorbis-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-release-visual-studio/_deps/flac-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-release-visual-studio/_deps/freetype-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-release-visual-studio/_deps/freetype-src/subprojects/dlg" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-release-visual-studio/_deps/ogg-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-release-visual-studio/_deps/sfml-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-release-visual-studio/_deps/vorbis-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/flac-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/freetype-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/freetype-src/subprojects/dlg" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/ogg-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/sfml-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/tomlplusplus-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/vorbis-src" vcs="Git" />
   </component>
 </project>

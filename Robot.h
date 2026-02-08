@@ -17,7 +17,7 @@
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/System/Time.hpp"
-
+// przeciwnik
 class Robot : public sf::Drawable, public sf::Transformable {
 public:
     explicit Robot(const sf::Texture &texture, const sf::Texture &texture2, const float &gif_time, const float &scale,
@@ -29,11 +29,11 @@ public:
                                                                          gif_time_(sf::seconds(gif_time)) {
         setScale({scale, scale});
     };
-
+    // spełnienie konceptu CollisionObject
     sf::FloatRect getBounds() const {
         return getTransform().transformRect(sprite.getGlobalBounds());
     }
-    //  kolizja z pociskiem
+    // spełnienie konceptu CollisionWith
     void collision(Bullet &collider) {
         if (collider.damage <= health) {
             health -= collider.damage;
@@ -43,11 +43,11 @@ public:
             health = 0;
         }
     }
-
+    // spełnienie konceptu Removable
     bool shouldRemove() const {
         return health <= 0;
     }
-
+    // aktualizacja stanu przeciwnika, funkcja przyjmuje referencje do obiektu shooter, który spełnia koncept Shooter
     void update(const sf::Time &elapsed, CollisionObject auto &player, Shooter auto &shooter) {
         // animacja
         current_gif_time_ += elapsed;
@@ -69,6 +69,7 @@ public:
 
         sprite.setColor(sf::Color::Red);
         time_from_shot += elapsed;
+        // sprawdzanie, czy gracz znajduje się pod przeciwnikiem
         if (time_from_shot >= bullet_delay && getBounds().getCenter().x - 5 < player_bounds.getCenter().x &&
             getBounds().
             getCenter().x + 5 > player_bounds.getCenter().x) {
@@ -94,13 +95,14 @@ private:
     sf::Sprite sprite;
 
 protected:
+    // funkcja rysowania z sf::Drawable
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         states.transform *= getTransform();
         target.draw(sprite, states);
     };
 };
 
-
+// klasa kontrolująca przeciwników.
 class Enemy_Controller {
 public:
     explicit Enemy_Controller(std::vector<std::shared_ptr<Robot> > &current_enemy, const sf::Vector2f &border_x)
@@ -132,7 +134,7 @@ public:
         }
         update_can_shoot();
     };
-    // dodawanei przeciwnika
+    // dodawanie przeciwnika
     Enemy_Controller &add_enemy(const int &line,const sf::Texture &texture, const sf::Texture &texture2, const float &gif_time, const int &health, const int &damage,
                                 const float &bulletSpeed, const float &bulletDelay) {
         auto robot = std::make_shared<Robot>(texture,texture2,gif_time, robot_scale, health, damage, bulletSpeed, bulletDelay);
@@ -148,7 +150,7 @@ public:
         }
         turn = TurnState::Right;
     }
-
+    // setter line
     void set_enemy_y(const std::vector<float> &lines) {
         enemy_y = lines;
         enemy_line = std::vector(enemy_y.size(), std::vector<std::weak_ptr<Robot> >());
@@ -162,6 +164,7 @@ public:
     sf::Vector2f border_x;
 
 private:
+    // usuwanie wszystkich weak_ptr, które wygasły.
     static void delete_expired(std::vector<std::weak_ptr<Robot> > &current_line) {
         erase_if(current_line, [](const std::weak_ptr<Robot> &enemy) { return enemy.expired(); });
     }
@@ -176,7 +179,7 @@ private:
             }
         }
     }
-
+    // aktualizowanie pozycji y.
     void update_y() {
         delete_expired(enemy_line.back());
         if (enemy_line.back().empty()) {

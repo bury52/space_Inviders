@@ -12,9 +12,10 @@
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/Transformable.hpp"
-
+// pocisk
 class Bullet : public sf::Drawable, public sf::Transformable {
 public:
+    // spełnienie konceptu CollisionObject
     sf::FloatRect getBounds() const {
         return getTransform().transformRect(shape.getGlobalBounds());
     };
@@ -25,6 +26,7 @@ public:
     int damage = 3;
 
 protected:
+    // funkcja rysowania z sf::Drawable
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         states.transform *= getTransform();
         target.draw(shape, states);

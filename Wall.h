@@ -10,9 +10,10 @@
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/Graphics/RenderStates.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
-
+// ściany
 class Wall : public sf::Drawable {
 public:
+    // tworzenie ściany
     Wall(const sf::Vector2f &position, const sf::Vector2i &segments, const float &scale, const int& cut)
         : bounds(position, static_cast<sf::Vector2f>(segments) * scale) {
         const sf::Vector2f scaleVector(scale, scale);
@@ -28,10 +29,8 @@ public:
             }
         }
 
-
-
     }
-
+    // spełnienie konceptu CollisionObject
     [[nodiscard]] sf::FloatRect getBounds() const {
         return bounds;
     };
@@ -51,6 +50,7 @@ public:
     }
 
 protected:
+    // funkcja rysowania z sf::Drawable
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         for (const auto &segment: wall_segment)
             target.draw(segment, states);

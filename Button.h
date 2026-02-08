@@ -20,13 +20,13 @@ public:
                     })
         : content_(std::move(content)), callback(std::move(cb)) {
     }
-
+    // klikanie
     void onMouseButtonPressed(const sf::Event::MouseButtonPressed &mouseEvent) {
         if (getBounds().contains(static_cast<sf::Vector2f>(mouseEvent.position))) {
             if (callback) callback();
         }
     }
-
+    // spełnienie konceptu CollisionObject
     sf::FloatRect getBounds() const {
         return getTransform().transformRect(UIElement_getBounds(*content_));
     }
@@ -35,12 +35,13 @@ public:
     Callback callback;
 
 protected:
+    // funkcja rysowania z sf::Drawable
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         states.transform *= getTransform();
         target.draw(*content_, states);
     }
 };
-
+// zrobiony ładny button z tekstem
 class UIButton : public sf::Drawable, public sf::Transformable {
 public:
     UIButton(const sf::Text &text)
@@ -51,7 +52,7 @@ public:
         shape.setOutlineColor(sf::Color(200, 200, 200));
         shape.setOutlineThickness(1.f);
     }
-
+    // spełnienie konceptu CollisionObject
     sf::FloatRect getBounds() const {
         return getTransform().transformRect(shape.getGlobalBounds());
     }
@@ -59,9 +60,8 @@ public:
     sf::Text text;
     sf::RectangleShape shape;
 
-
-
 protected:
+    // funkcja rysowania z sf::Drawable
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
         states.transform *= getTransform();
         target.draw(shape, states);
